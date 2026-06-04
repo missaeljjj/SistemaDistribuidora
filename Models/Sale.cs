@@ -1,0 +1,39 @@
+﻿using System;
+namespace SistemaDistribuidora.Models;
+class Sale : BaseTransaction
+{
+    private int _IdSale;
+    private int _CustomerId;
+    public int IdSale
+    {
+        get => _IdSale;
+        private set => _IdSale = value;
+    }
+    public int CustomerId
+    {
+        get => _CustomerId;
+        private set => _CustomerId = value;
+    }
+
+    public Sale(int idSale, int customerId, int employeeId, DateTime date, decimal totalAmount)
+        : base(idSale, employeeId, date, totalAmount)
+    {
+        this.IdSale = idSale;
+        this.CustomerId = customerId;
+    }
+}
+
+class SaleDetail : BaseTransactionDetail
+{
+    private int _IdSaleDetail;
+    public int IdSaleDetail
+    {
+        get => _IdSaleDetail;
+        private set => _IdSaleDetail = value;
+    }
+    public SaleDetail(int idSaleDetail, int transactionId, int productId, int quantity, decimal unitPrice)
+        : base(idSaleDetail, transactionId, productId, quantity, unitPrice)
+    {
+        this.IdSaleDetail = idSaleDetail;
+    }
+}
