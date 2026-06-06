@@ -363,4 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 #congiration of conecction to database
-appsettings .Development.json
+appsettings.Development.json
