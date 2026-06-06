@@ -1,6 +1,15 @@
-﻿namespace Sistema_Venta_y_compra_distribuidora.Repositories.DataBaseConnection
+﻿using Microsoft.Data.SqlClient;
+using System.Data;
+using System.Threading.Tasks;
+
+
+namespace SistemaDistribuidora.Repositories.DataBaseConnection
 {
-    internal class DataBase
+    public class DataBase
     {
+        private readonly string _connectionString = "";
+
+
+
     }
 }
