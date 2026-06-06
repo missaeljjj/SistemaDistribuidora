@@ -2,7 +2,7 @@
 
 namespace SistemaDistribuidora.Models;
 
-class Category
+public class Category
 {
     private int CategoryId;
     private string CategoryName = "";

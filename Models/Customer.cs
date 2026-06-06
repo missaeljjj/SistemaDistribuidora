@@ -1,8 +1,8 @@
-using System; 
+using System;
 
 namespace SistemaDistribuidora.Models;
 
-class Customer : Person
+public class Customer : Person
 {
     private int _IdCustomer;
 
@@ -12,10 +12,10 @@ class Customer : Person
         private set => _IdCustomer = value;
     }
 
-    public Customer(int idperson, string fullname, string typeofperson, string identitycard, string address, 
-                    DateTime registerdate, bool status,int idcustomer)
-                     
-                    : base(idperson, fullname, typeofperson, identitycard , address, registerdate, status)
+    public Customer(int idperson, string fullname, string typeofperson, string identitycard, string address,
+                    DateTime registerdate, bool status, int idcustomer)
+
+                    : base(idperson, fullname, typeofperson, identitycard, address, registerdate, status)
     {
         this.IdCustomer = idcustomer;
     }

@@ -1,7 +1,7 @@
 ﻿using System;
 namespace SistemaDistribuidora.Models;
 
-abstract class BaseTransaction
+public abstract class BaseTransaction
 {
     private int _IdTransaction;
     private int _EmployeeId;
@@ -38,7 +38,7 @@ abstract class BaseTransaction
     }
 }
 
-abstract class BaseTransactionDetail
+public abstract class BaseTransactionDetail
 {
     private int _IdTransactionDetail;
     private int _TransactionId;
@@ -78,4 +78,4 @@ abstract class BaseTransactionDetail
         this.Quantity = quantity;
         this.UnitPrice = unitPrice;
     }
-} 
+}

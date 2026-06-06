@@ -1,6 +1,7 @@
 ﻿using System;
 namespace SistemaDistribuidora.Models;
-class Sale : BaseTransaction
+
+public class Sale : BaseTransaction
 {
     private int _IdSale;
     private int _CustomerId;
@@ -23,7 +24,7 @@ class Sale : BaseTransaction
     }
 }
 
-class SaleDetail : BaseTransactionDetail
+public class SaleDetail : BaseTransactionDetail
 {
     private int _IdSaleDetail;
     public int IdSaleDetail

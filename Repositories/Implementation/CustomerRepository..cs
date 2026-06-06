@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using SistemaDistribuidora.Repositories.Interfaces;
+namespace SistemaDistribuidora.Repositories.Implementation;
 
-namespace Sistema_Venta_y_compra_distribuidora.Repositories.Implementation
+public class CustomerRepository : ICustomerRepository
 {
-    internal class CustomerRepository
-    {
-    }
+
 }

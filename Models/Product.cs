@@ -1,7 +1,7 @@
 ﻿using System;
 namespace SistemaDistribuidora.Models;
 
-class Producto 
+public class Product
 {
     private int _IdProduct;
     private string _Name = "";
@@ -16,10 +16,10 @@ class Producto
         get => _IdProduct;
         private set => _IdProduct = value;
     }
-    public string Name 
+    public string Name
     {
         get => _Name;
-        private set => _Name =!string.IsNullOrWhiteSpace(value) ? value.Trim() : throw new ArgumentException("El nombre del producto no puede estar vacío");
+        private set => _Name = !string.IsNullOrWhiteSpace(value) ? value.Trim() : throw new ArgumentException("El nombre del producto no puede estar vacío");
     }
 
     public int Stock
@@ -37,7 +37,7 @@ class Producto
     public decimal SalePrice
     {
         get => _SalePrice;
-        private set => _SalePrice =  value > 0 ? value : throw new ArgumentException("El precio de venta debe ser mayor a cero") ;
+        private set => _SalePrice = value > 0 ? value : throw new ArgumentException("El precio de venta debe ser mayor a cero");
     }
 
     public decimal PurchasePrice
@@ -46,13 +46,13 @@ class Producto
         private set => _PurchasePrice = value > 0 ? value : throw new ArgumentException("El precio de compra debe ser mayor a cero");
     }
 
-    public bool Status 
+    public bool Status
     {
         get => _Status;
         private set => _Status = value;
     }
 
-    public Producto(int idProduct, string name,int stock, int categoryId, decimal salePrice, decimal purchasePrice, bool status)
+    public Product(int idProduct, string name, int stock, int categoryId, decimal salePrice, decimal purchasePrice, bool status)
     {
         this.IdProduct = idProduct;
         this.Name = name;

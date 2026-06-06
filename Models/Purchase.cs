@@ -1,6 +1,7 @@
 ﻿using System;
 namespace SistemaDistribuidora.Models;
-class Purchase : BaseTransaction
+
+public class Purchase : BaseTransaction
 {
     private int _IdPurchase;
     private int _SupplierId;
@@ -15,17 +16,17 @@ class Purchase : BaseTransaction
         get => _SupplierId;
         private set => _SupplierId = value;
     }
-   
+
     public Purchase(int idPurchase, int supplierId, int employeeId, DateTime date, decimal totalAmount)
         : base(idPurchase, employeeId, date, totalAmount)
     {
         this.IdPurchase = idPurchase;
         this.SupplierId = supplierId;
-  
+
     }
 }
 
-class PurchaseDetail : BaseTransactionDetail
+public class PurchaseDetail : BaseTransactionDetail
 {
     private int _IdPurchaseDetail;
     public int IdPurchaseDetail
