@@ -1,27 +1,28 @@
 ﻿using System;
+using SistemaDistribuidora.Exceptions;
 
 namespace SistemaDistribuidora.Models;
 
 public class Category
 {
-    private int CategoryId;
-    private string CategoryName = "";
+    private int _IdCategory;
+    private string _CategoryName = "";
 
     public int IdCategory
     {
-        get => CategoryId;
-        private set => CategoryId = value;
+        get => _IdCategory;
+        private set => _IdCategory = value;
     }
 
     public string Name
     {
-        get => CategoryName;
-        private set => CategoryName = !string.IsNullOrWhiteSpace(value) ? value.Trim() : throw new ArgumentException("El nombre de la categoría no puede estar vacío");
+        get => _CategoryName;
+        private set => _CategoryName = !string.IsNullOrWhiteSpace(value) ? value.Trim() : throw new ValidationException("El nombre de la categoría no puede estar vacío" , nameof(Name));
     }
 
-    public Category(int idCategory, string name)
+    public Category(int idcategory, string name)
     {
-        this.IdCategory = idCategory;
+        this.IdCategory = idcategory;
         this.Name = name;
     }
 

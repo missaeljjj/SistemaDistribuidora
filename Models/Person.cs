@@ -1,5 +1,5 @@
 ﻿using System;
-
+using SistemaDistribuidora.Exceptions;
 namespace SistemaDistribuidora.Models;
 
 public abstract class Person
@@ -23,7 +23,7 @@ public abstract class Person
     public string FullName
     {
         get => _FullName;
-        protected set => _FullName = !string.IsNullOrWhiteSpace(value) ? value.Trim() : throw new ArgumentException("El nombre no puede estar vacio");
+        protected set => _FullName = !string.IsNullOrWhiteSpace(value) ? value.Trim() : throw new ValidationException("El nombre no puede estar vacio", nameof(FullName));
     }
 
     public string TypeOfPerson
@@ -33,7 +33,7 @@ public abstract class Person
         {
             string NewValue = value?.Trim() ?? "";
             if (NewValue != "Natural" && NewValue != "Juridica")
-                throw new ArgumentException("El tipo de persona debe ser 'Natural' o 'Juridica'");
+                throw new ValidationException("El tipo de persona debe ser 'Natural' o 'Juridica'",nameof(TypeOfPerson));
             _TypeOfPerson = NewValue;
         }
     }
@@ -41,13 +41,13 @@ public abstract class Person
     public string IdentityCard
     {
         get => _IdentityCard;
-        protected set => _IdentityCard = !string.IsNullOrWhiteSpace(value) ? value.Trim() : throw new ArgumentException("La identificacion no puede estar vacía");
+        protected set => _IdentityCard = !string.IsNullOrWhiteSpace(value) ? value.Trim() : throw new ValidationException("La identificacion no puede estar vacía", nameof(IdentityCard));
     }
 
     public string Address
     {
         get => _Address;
-        protected set => _Address = !string.IsNullOrWhiteSpace(value) ? value.Trim() : throw new ArgumentException("La dirección no puede estar vacía");
+        protected set => _Address = !string.IsNullOrWhiteSpace(value) ? value.Trim() : throw new ValidationException("La dirección no puede estar vacía", nameof(Address));
     }
 
     public DateTime RegisterDate
@@ -72,7 +72,5 @@ public abstract class Person
         this.RegisterDate = registerdate;
         this.Status = status;
     }
-
-
 
 }

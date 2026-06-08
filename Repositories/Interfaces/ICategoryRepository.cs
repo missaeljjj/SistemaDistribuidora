@@ -6,5 +6,5 @@ namespace SistemaDistribuidora.Repositories.Interfaces;
 public interface ICategoryRepository : IGenericRepository<Category>
 {
     //Obtiene todas las categorías junto con sus productos asociados
-    Task<IEnumerable<Category>> GetAllCategoriesWithProductsAsync();
+    Task<IEnumerable<Category>> GetAllCategoriesWithQuantityOfProductsAsync();
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using SistemaDistribuidora.Exceptions;
 namespace SistemaDistribuidora.Models;
 
 public class Product
@@ -19,13 +20,13 @@ public class Product
     public string Name
     {
         get => _Name;
-        private set => _Name = !string.IsNullOrWhiteSpace(value) ? value.Trim() : throw new ArgumentException("El nombre del producto no puede estar vacío");
+        private set => _Name = !string.IsNullOrWhiteSpace(value) ? value.Trim() : throw new ValidationException("El nombre del producto no puede estar vacío", nameof(Name));
     }
 
     public int Stock
     {
         get => _Stock;
-        private set => _Stock = value > 0 ? value : throw new ArgumentException("El stock no puede ser negativo");
+        private set => _Stock = value >= 0 ? value : throw new ValidationException("El stock no puede ser negativo",nameof(Stock));
     }
 
     public int CategoryId
@@ -37,13 +38,13 @@ public class Product
     public decimal SalePrice
     {
         get => _SalePrice;
-        private set => _SalePrice = value > 0 ? value : throw new ArgumentException("El precio de venta debe ser mayor a cero");
+        private set => _SalePrice = value > 0 ? value : throw new ValidationException("El precio de venta debe ser mayor a cero", nameof(SalePrice));
     }
 
     public decimal PurchasePrice
     {
         get => _PurchasePrice;
-        private set => _PurchasePrice = value > 0 ? value : throw new ArgumentException("El precio de compra debe ser mayor a cero");
+        private set => _PurchasePrice = value > 0 ? value : throw new ValidationException("El precio de compra debe ser mayor a cero", nameof(PurchasePrice));
     }
 
     public bool Status

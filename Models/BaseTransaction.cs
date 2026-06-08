@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SistemaDistribuidora.Exceptions;
+using System;
 namespace SistemaDistribuidora.Models;
 
 public abstract class BaseTransaction
@@ -26,7 +27,7 @@ public abstract class BaseTransaction
     public decimal TotalAmount
     {
         get => _TotalAmount;
-        set => _TotalAmount = value > 0 ? value : throw new ArgumentException("El monto total debe ser mayor a cero");
+        set => _TotalAmount = value > 0 ? value : throw new ValidationException("El monto total debe ser mayor a cero", nameof(TotalAmount));
     }
 
     public BaseTransaction(int idTransaction, int employeeId, DateTime date, decimal totalAmount)
@@ -63,12 +64,12 @@ public abstract class BaseTransactionDetail
     public int Quantity
     {
         get => _Quantity;
-        protected set => _Quantity = value > 0 ? value : throw new ArgumentException("La cantidad debe ser mayor a cero");
+        protected set => _Quantity = value > 0 ? value : throw new ValidationException("La cantidad debe ser mayor a cero", nameof(Quantity));
     }
     public decimal UnitPrice
     {
         get => _UnitPrice;
-        protected set => _UnitPrice = value > 0 ? value : throw new ArgumentException("El precio unitario debe ser mayor a cero");
+        protected set => _UnitPrice = value > 0 ? value : throw new ValidationException("El precio unitario debe ser mayor a cero", nameof(UnitPrice));
     }
     public BaseTransactionDetail(int idTransactionDetail, int transactionId, int productId, int quantity, decimal unitPrice)
     {
