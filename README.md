@@ -14,17 +14,9 @@ A través de una base de datos robusta, el sistema garantiza la integridad y seg
 
 **LENGUAJE:** C#
 
-**BASE DE DATOS:** SQL SERVER
+**BASE DE DATOS:** SQL SERVER ALOJADO EN LA NUBE AZURE
 
-**INTERFAZ GRAFICA:** AVALONIA UI
+**INTERFAZ GRAFICA:** AVALONIA UI ARQUITECTURA MVVM
 
 **ARQUITECTURA:** Separación clara entre la interfaz de usuario, la lógica de negocio y el acceso a datos.
 
-## COLABORADORES
-**BR. AZUCENA MEJIA**
-
-**BR. ERICK DELGADO**
-
-**BR. KAMILA LOPEZ**
-
-**BR NAYELIS MENDOZA**
