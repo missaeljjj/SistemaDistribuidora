@@ -11,9 +11,9 @@ public class Supplier : Person
         private set => _IdSupplier = value;
     }
     public Supplier(int idperson, string fullname, string typeofperson, string identitycard, string address,
-                    DateTime registerdate, bool status, int idsupplier)
+                    string phone, DateTime registerdate, bool status, int idsupplier)
 
-                    : base(idperson, fullname, typeofperson, identitycard, address, registerdate, status)
+                    : base(idperson, fullname, typeofperson, identitycard, address,phone, registerdate, status)
     {
         this.IdSupplier = idsupplier;
     }

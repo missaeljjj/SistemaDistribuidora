@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 namespace SistemaDistribuidora.Models;
 
 public class Purchase : BaseTransaction
@@ -17,8 +18,9 @@ public class Purchase : BaseTransaction
         private set => _SupplierId = value;
     }
 
-    public Purchase(int idPurchase, int supplierId, int employeeId, DateTime date, decimal totalAmount)
-        : base(idPurchase, employeeId, date, totalAmount)
+
+    public Purchase(int idPurchase, int supplierId, int employeeId, DateTime date, decimal totalAmount, IEnumerable<PurchaseDetail> PurchaseCart)
+        : base(idPurchase, employeeId, date, totalAmount, PurchaseCart)
     {
         this.IdPurchase = idPurchase;
         this.SupplierId = supplierId;

@@ -8,6 +8,7 @@ public class Product
     private string _Name = "";
     private int _Stock;
     private int _CategoryId;
+    private int _SupplierId;
     private decimal _SalePrice;
     private decimal _PurchasePrice;
     private bool _Status = true;
@@ -35,6 +36,12 @@ public class Product
         private set => _CategoryId = value;
     }
 
+    public int SupplierId
+    {
+        get => _SupplierId;
+        private set => _SupplierId = value;
+    }
+
     public decimal SalePrice
     {
         get => _SalePrice;
@@ -53,12 +60,13 @@ public class Product
         private set => _Status = value;
     }
 
-    public Product(int idProduct, string name, int stock, int categoryId, decimal salePrice, decimal purchasePrice, bool status)
+    public Product(int idProduct, string name, int stock, int categoryId,int SupplierId, decimal salePrice, decimal purchasePrice, bool status)
     {
         this.IdProduct = idProduct;
         this.Name = name;
         this.Stock = stock;
         this.CategoryId = categoryId;
+        this.SupplierId = SupplierId;
         this.SalePrice = salePrice;
         this.PurchasePrice = purchasePrice;
         this.Status = status;

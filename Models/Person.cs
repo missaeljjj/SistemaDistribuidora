@@ -8,6 +8,7 @@ public abstract class Person
     private string _FullName = "";
     private string _TypeOfPerson = "";
     private string _IdentityCard = "";
+    private string _Phone = "";
     private string _Address = "";
     private DateTime _RegisterDate = DateTime.Now;
     private bool _Status = true;
@@ -44,6 +45,14 @@ public abstract class Person
         protected set => _IdentityCard = !string.IsNullOrWhiteSpace(value) ? value.Trim() : throw new ValidationException("La identificacion no puede estar vacía", nameof(IdentityCard));
     }
 
+    //No usamos encapsulamiento para garantizar que no este vacio porque es un campo que se puede omitir sin problema
+    public string Phone 
+    {
+        get => _Phone;
+        protected set => _Phone = value;
+    }
+
+
     public string Address
     {
         get => _Address;
@@ -62,13 +71,14 @@ public abstract class Person
         protected set => _Status = value;
     }
 
-    public Person(int idperson, string fullname, string typeofperson, string identitycard, string address, DateTime registerdate, bool status)
+    public Person(int idperson, string fullname, string typeofperson, string identitycard, string address, string phone, DateTime registerdate, bool status)
     {
         this.Id = idperson;
         this.FullName = fullname;
         this.TypeOfPerson = typeofperson;
         this.IdentityCard = identitycard;
         this.Address = address;
+        this.Phone = phone;
         this.RegisterDate = registerdate;
         this.Status = status;
     }

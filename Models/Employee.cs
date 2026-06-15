@@ -20,9 +20,9 @@ public class Employee : Person
     }
 
     public Employee(int idperson, string fullname, string typeofperson, string identitycard,
-        string address, DateTime registerdate, bool status, int idemployee, string employeeposition)
+        string address,string phone, DateTime registerdate, bool status, int idemployee, string employeeposition)
 
-         : base(idperson, fullname, typeofperson, identitycard, address, registerdate, status)
+         : base(idperson, fullname, typeofperson, identitycard, address,phone, registerdate, status)
     {
         this.IdEmployee = idemployee;
         this.Position = employeeposition;

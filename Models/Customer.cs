@@ -13,9 +13,9 @@ public class Customer : Person
     }
 
     public Customer(int idperson, string fullname, string typeofperson, string identitycard, string address,
-                    DateTime registerdate, bool status, int idcustomer)
+                    string phone,DateTime registerdate, bool status, int idcustomer)
 
-                    : base(idperson, fullname, typeofperson, identitycard, address, registerdate, status)
+                    : base(idperson, fullname, typeofperson, identitycard, address,phone,registerdate, status)
     {
         this.IdCustomer = idcustomer;
     }

@@ -1,5 +1,4 @@
-﻿using System;
-using SistemaDistribuidora.Exceptions;
+﻿using SistemaDistribuidora.Exceptions;
 
 namespace SistemaDistribuidora.Models;
 

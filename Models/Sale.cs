@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 namespace SistemaDistribuidora.Models;
 
 public class Sale : BaseTransaction
@@ -16,8 +17,9 @@ public class Sale : BaseTransaction
         private set => _CustomerId = value;
     }
 
-    public Sale(int idSale, int customerId, int employeeId, DateTime date, decimal totalAmount)
-        : base(idSale, employeeId, date, totalAmount)
+
+    public Sale(int idSale, int customerId, int employeeId, DateTime date, decimal totalAmount,IEnumerable<SaleDetail> SaleCart) 
+        : base(idSale, employeeId, date, totalAmount,SaleCart)
     {
         this.IdSale = idSale;
         this.CustomerId = customerId;

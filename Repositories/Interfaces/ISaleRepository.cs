@@ -11,11 +11,11 @@ public interface ISaleRepository : IGenericRepository<Sale>
     Task<IEnumerable<Sale>> GetSalesByDateRangeAsync(DateTime startDate, DateTime endDate);
 
     // Obtener el historial de ventas completo de un cliente específico
-    Task<IEnumerable<Sale>> GetSalesByCustomerAsync(int idCustomer);
+    Task<IEnumerable<Sale>>? GetSalesByCustomerAsync(int idCustomer);
 
     // Obtener las ventas procesadas por un empleado
-    Task<IEnumerable<Sale>> GetSalesByEmployeeAsync(int idEmployee);
+    Task<IEnumerable<Sale>>? GetSalesByEmployeeAsync(int idEmployee);
 
     // Método especial para anular una venta (cambiar estado y regresar los productos al inventario)
-    Task<bool> CancelSaleAsync(int idSale);
+    Task<bool>? CancelSaleAsync(int idSale);
 }

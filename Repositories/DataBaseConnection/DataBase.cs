@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SistemaDistribuidora.Repositories.DataBaseConnection;
 
-public class DataBase
+public class DataBase : IDataBase
 {
     private readonly string _connectionString = "";
 
@@ -35,7 +35,7 @@ public class DataBase
     }
 
     // Cambiado a GetConnectionAsync ya que retorna el objeto SqlConnection abierto
-    protected async Task<SqlConnection> GetConnectionAsync()
+    public async Task<SqlConnection> GetConnectionAsync()
     {
         // Creamos una nueva conexión utilizando la cadena de conexion cargada en el constructor
         var connection = new SqlConnection(_connectionString);
