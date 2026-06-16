@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+ using System.Collections.Generic;
 
 namespace SistemaDistribuidora.DTOs;
 
@@ -13,24 +13,24 @@ public record SaleSummaryDto(
 );
 
 // Factura completa — encabezado + lineas
-public class SaleFullDetailDto
+  public class SaleFullDetailDto
 {
     public int IdSale { get; set; }
     public string CustomerName { get; set; } = "";
     public string EmployeeName { get; set; } = "";
     public DateTime Date { get; set; }
     public decimal TotalAmount { get; set; }
-    public List<SaleDetailDto> Details { get; set; } = new();
+    public List<SaleDetailsDto> Details { get; set; } = new();
 }
 
 // Una linea de la factura
-public record SaleDetailDto
-(
+public record SaleDetailsDto(
+    int IdSale,
     int IdSaleDetail,
+    int ProductId,
     string ProductName,
     int Quantity,
     decimal UnitPrice,
     decimal Subtotal
 );
-
 

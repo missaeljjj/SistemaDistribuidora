@@ -19,8 +19,8 @@ public class Purchase : BaseTransaction
     }
 
 
-    public Purchase(int idPurchase, int supplierId, int employeeId, DateTime date, decimal totalAmount, IEnumerable<PurchaseDetail> PurchaseCart)
-        : base(idPurchase, employeeId, date, totalAmount, PurchaseCart)
+    public Purchase(int idPurchase, int supplierId, int employeeId, DateTime date, string status,decimal totalAmount, IEnumerable<PurchaseDetail> PurchaseCart)
+        : base(idPurchase, employeeId, date, totalAmount,status, PurchaseCart)
     {
         this.IdPurchase = idPurchase;
         this.SupplierId = supplierId;

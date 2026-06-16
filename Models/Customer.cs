@@ -19,4 +19,15 @@ public class Customer : Person
     {
         this.IdCustomer = idcustomer;
     }
+
+    //Constructor para detalle de cliente    
+    public Customer(string fullname, string typeofperson, string identitycard, string address,
+                    string phone, DateTime registerdate, bool status, int idcustomer)
+
+                    : base(fullname, typeofperson, identitycard, address, phone, registerdate, status)
+    {
+        this.IdCustomer = idcustomer;
+    }
+
+    
 }

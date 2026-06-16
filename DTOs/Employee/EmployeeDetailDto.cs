@@ -7,7 +7,7 @@ namespace SistemaDistribuidora.DTOs;
 // y agrega el campo especifico "Cargo" para representar el puesto o rol del empleado dentro de la empresa
 // </summary>
 public record EmployeeDetailDto(
-    int Id, string FullName, string Address, string Phone,string IdentityCard, bool Status,
+    int Id, string FullName, string Address, string Phone,string IdentityCard,string TypeofPerson, bool Status,
     DateTime RegisterDate,string Position,int quantityof
-) : PersonDetailDto(Id, FullName, Address, Phone,IdentityCard, Status,RegisterDate);
+) : PersonDetailDto(Id, FullName, Address, Phone,IdentityCard,TypeofPerson ,Status,RegisterDate);
 

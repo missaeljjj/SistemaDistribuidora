@@ -24,11 +24,18 @@ public class EmployeeRepository : IEmployeeRepository
 
     public async Task<Employee> GetByIdAsync(int EmployeeId) 
     {
-        return null;
+        return null!;
     }
     public async Task<IEnumerable<Employee>> GetAllAsync()
     {
-        return null;
+        return null!;
     }
+
+    public async Task<IEnumerable<Employee>> GetAllEmployeesWithQuantityofSaleAsync()
+    {
+        return null!;
+    }
+
+    
 }
 

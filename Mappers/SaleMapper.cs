@@ -38,7 +38,8 @@ public static class SaleMapper
              customerId: dto.CustomerId,
              employeeId: dto.EmployeeId,
              date: System.DateTime.Now,
-             totalAmount: dto.TotalAmount,
+             Status: dto.SaleStatus,
+             totalAmount: 0, //DEFINIDO POR LA BD
              SaleCart: Cart     
 
                 
@@ -47,6 +48,7 @@ public static class SaleMapper
             
     }
 
+    /*
     public static IEnumerable<SaleDetailDto> ToSaleDetailDtoList(
         this Sale sale,
         IReadOnlyDictionary<int, string> productNames,
@@ -54,17 +56,16 @@ public static class SaleMapper
         => sale.Cart
             .Cast<SaleDetail>()
             .Select(detail => new SaleDetailDto(
-                SaleId: sale.IdSale,
-                SaleDetailId: detail.IdSaleDetail,
-                ProductId: detail.ProductId,
+                IdSaleDetail: detail.IdSaleDetail,
+                ProductId: detail.ProductId,       // ← era "Product"
                 ProductName: productNames.GetValueOrDefault(detail.ProductId, "Desconocido"),
                 CategoryName: categoryNames.GetValueOrDefault(detail.ProductId, "Sin categoría"),
                 Quantity: detail.Quantity,
                 UnitPrice: detail.UnitPrice,
                 Subtotal: detail.Quantity * detail.UnitPrice
-            ));
+            ));                                       
 
-
+    */
 
 
 

@@ -1,5 +1,4 @@
 ﻿namespace SistemaDistribuidora.Models;
-
 using System;
 
 public class Supplier : Person
@@ -14,6 +13,14 @@ public class Supplier : Person
                     string phone, DateTime registerdate, bool status, int idsupplier)
 
                     : base(idperson, fullname, typeofperson, identitycard, address,phone, registerdate, status)
+    {
+        this.IdSupplier = idsupplier;
+    }
+
+    public Supplier(string fullname, string typeofperson, string identitycard, string address,
+                    string phone, DateTime registerdate, bool status, int idsupplier)
+
+                    : base(fullname, typeofperson, identitycard, address, phone, registerdate, status)
     {
         this.IdSupplier = idsupplier;
     }

@@ -8,7 +8,7 @@ namespace SistemaDistribuidora.Mappers;
 public static class SupplierMapper
 {
     //Supplier -> SupplierDetailDto
-    public static SupplierDetailDto ToDetailDto(this Supplier supplier)
+    public static SupplierDetailDto ToDetailDto(this Supplier supplier,int quantityofpurchases,int quantityofproduct)
         => new SupplierDetailDto
         (
             Id: supplier.IdSupplier,
@@ -16,8 +16,11 @@ public static class SupplierMapper
             Address: supplier.Address,
             Phone: supplier.Phone,
             IdentityCard: supplier.IdentityCard,
+            TypeOfPerson: supplier.TypeOfPerson,
             Status: supplier.Status,
-            RegisterDate: supplier.RegisterDate
+            RegisterDate: supplier.RegisterDate,
+            QuantityOfPurchases: quantityofpurchases,
+            QuantityOfProducts: quantityofproduct
         );
 
     //SupplierCreateDto -> Supplier

@@ -35,20 +35,21 @@ public static class PurchaseMapper
             supplierId: dto.SupplierId,
             employeeId: dto.EmployeeId,
             date: DateTime.Now,
-            totalAmount: dto.TotalAmount,
+            status: dto.PurchaseStatus,
+            totalAmount: 0,
             PurchaseCart: cart
         );
     }
 
     // Purchase → PurchaseDetailDto (para mostrar una compra como factura)
-
+    /*
     public static IEnumerable<PurchaseDetailDto> ToPurchaseDetailDtoList(
         this Purchase purchase,
         IReadOnlyDictionary<int, string> productNames)
         => purchase.Cart
             .Cast<PurchaseDetail>()
-            .Select(detail => new PurchaseDetailDto(
-                PurchaseId: purchase.IdPurchase,
+            .Select(detail => new PurchaseDetailsDto(
+                PurchaseId: detail.IdPurchaseDetail
                 PurchaseDetailId: detail.IdPurchaseDetail,
                 ProductId: detail.ProductId,
                 ProductName: productNames.GetValueOrDefault(detail.ProductId, "Desconocido"),
@@ -56,5 +57,5 @@ public static class PurchaseMapper
                 UnitPrice: detail.UnitPrice
             ));
 
-
+    */
 }

@@ -32,28 +32,28 @@ public class PurchaseRepository : IPurchaseRepository
 
     public async Task<IEnumerable<Purchase>> GetAllAsync()
     {
-        return null;
+        return null!;
     }
 
     public async Task<Purchase> GetByIdAsync(int PurchaseId)
     {
-        return null;
+        return null!;
     }
 
     public async Task<IEnumerable<Purchase>> GetPurchasesBySupplierAsync(int idSupplier)
     {
-        return null;
+        return null!;
     }
 
     // Obtener las compras gestionadas por un empleado específico
     public async Task<IEnumerable<Purchase>> GetPurchasesByEmployeeAsync(int idEmployee)
     {
-        return null;
+        return null!;
     }
 
 
     public async Task<IEnumerable<Purchase>> GetPurchasesByDateRangeAsync(DateTime startDate, DateTime endDate)
     {
-        return null;
+        return null!;
     }
 }

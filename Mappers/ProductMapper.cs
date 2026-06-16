@@ -52,7 +52,7 @@ public static class ProductMapper
 
     //Detalle de inventario para metodo del repositorio
     //Product -> InventoryDetailDto
-    public static InventoryDetailDto ToInventoryDetail(Product product, string SupplierName, string CategoryName)
+    public static InventoryDetailDto ToInventoryDetail(this Product product, string SupplierName, string CategoryName)
         => new InventoryDetailDto
         (
             ProductId:      product.IdProduct,

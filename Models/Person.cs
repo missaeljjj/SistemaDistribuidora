@@ -83,4 +83,15 @@ public abstract class Person
         this.Status = status;
     }
 
+    public Person(string fullname, string typeofperson, string identitycard, string address, string phone, DateTime registerdate, bool status)
+    {
+        this.FullName = fullname;
+        this.TypeOfPerson = typeofperson;
+        this.IdentityCard = identitycard;
+        this.Address = address;
+        this.Phone = phone;
+        this.RegisterDate = registerdate;
+        this.Status = status;
+    }
+
 }

@@ -18,6 +18,7 @@ public static class CustomerMapper
             Address:            customer.Address,
             Phone :             customer.Phone,
             IdentityCard:       customer.IdentityCard,
+            TypeOfPerson:       customer.TypeOfPerson,
             Status:             customer.Status,
             RegisterDate:       customer.RegisterDate,
             QuantityOfPurchases: quantityofpurchases

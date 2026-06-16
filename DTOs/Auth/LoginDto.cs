@@ -1,6 +1,4 @@
-﻿
-
-namespace SistemaDistribuidora.DTOs.Auth;
+﻿namespace SistemaDistribuidora.DTOs.Auth;
 public class LoginDto
 {
     public string Username { get; init; } = "";

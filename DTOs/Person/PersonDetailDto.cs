@@ -21,6 +21,7 @@ public abstract record PersonDetailDto
     string Address,
     string Phone,
     string IdentityCard,
+    string TypeOfPerson,
     bool Status,
     DateTime RegisterDate
 );

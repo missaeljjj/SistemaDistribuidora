@@ -27,7 +27,7 @@ public class UserRepository : IUserRepository
         {
             //Dapper
             var row = await connection.QueryFirstOrDefaultAsync<UserMap>(
-                "usp_Login",
+                "sp_UserLogin",
                 new { Username = username, Password = password },
                 commandType: CommandType.StoredProcedure
             );

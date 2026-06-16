@@ -15,6 +15,7 @@ public static class EmployeeMapper
             Address: employee.Address,
             Phone: employee.Phone,
             IdentityCard: employee.IdentityCard,
+            TypeofPerson: employee.TypeOfPerson,
             Status: employee.Status,
             RegisterDate: employee.RegisterDate,
             Position: employee.Position,

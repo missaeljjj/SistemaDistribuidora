@@ -27,4 +27,13 @@ public class Employee : Person
         this.IdEmployee = idemployee;
         this.Position = employeeposition;
     }
+
+    public Employee(string fullname, string typeofperson, string identitycard,
+       string address, string phone, DateTime registerdate, bool status, int idemployee, string employeeposition)
+
+        : base(fullname, typeofperson, identitycard, address, phone, registerdate, status)
+    {
+        this.IdEmployee = idemployee;
+        this.Position = employeeposition;
+    }
 }

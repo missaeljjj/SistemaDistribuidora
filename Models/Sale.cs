@@ -18,8 +18,8 @@ public class Sale : BaseTransaction
     }
 
 
-    public Sale(int idSale, int customerId, int employeeId, DateTime date, decimal totalAmount,IEnumerable<SaleDetail> SaleCart) 
-        : base(idSale, employeeId, date, totalAmount,SaleCart)
+    public Sale(int idSale, int customerId, int employeeId, DateTime date,string Status, decimal totalAmount,IEnumerable<SaleDetail> SaleCart) 
+        : base(idSale, employeeId, date ,totalAmount, Status, SaleCart)
     {
         this.IdSale = idSale;
         this.CustomerId = customerId;

@@ -31,18 +31,24 @@ public class ProductRepository : IProductRepository
 
     public async Task<IEnumerable<Product>> GetAllAsync()
     {
-        return null;
+        return null!;
     }
 
     public async Task<Product> GetByIdAsync(int ProductId)
     {
-        return null;
+        return null!;
     }
 
     public async Task<IEnumerable<Product>> GetAllProductsInInventoryAsync() 
     {
-        return null;
+        return null!;
     }
+
+    public async Task<IEnumerable<Product>> GetAllProductsWithQuantityOfSales()
+    {
+        return null!;
+    }
+
 
 }
 

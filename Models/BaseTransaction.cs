@@ -24,8 +24,8 @@ public abstract class BaseTransaction
         protected set
         {
             string NewValue = value?.Trim() ?? "";
-            if (NewValue != "Realizada" && NewValue != "Pendiente" && NewValue != "Cancelada")
-                throw new ValidationException("El tipo de persona debe ser 'Natural' o 'Juridica'", nameof(Status));
+            if (NewValue != "REALIZADA" && NewValue != "PENDIENTE" && NewValue != "CANCELADA")
+                throw new ValidationException("Estado Invalido'", nameof(Status));
             _Status = NewValue;
         }
     }

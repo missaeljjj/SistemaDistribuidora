@@ -36,17 +36,17 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task<IEnumerable<Category>> GetAllAsync()
     {
-        return null;
+        return null!;
     }
 
     public async Task<Category> GetByIdAsync(int CategoryId)
     {
-        return null;
+        return null!;
     }
 
     public async Task<IEnumerable<Category>> GetAllCategoriesWithQuantityOfProductsAsync() 
     {
-        return null;
+        return null!;
     }
 }
 
