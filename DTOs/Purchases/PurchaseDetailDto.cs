@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace SistemaDistribuidora.DTOs;
 
-
 public record PurchaseDetailDto
 {
     public int IdPurchase { get; set; }

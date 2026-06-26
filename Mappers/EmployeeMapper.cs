@@ -1,13 +1,14 @@
 ﻿using SistemaDistribuidora.DTOs;
 using SistemaDistribuidora.Models;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SistemaDistribuidora.Mappers;
 
 public static class EmployeeMapper
 {
-    //QuantityOf debido que las vistas que utilizo con cantidad de ventas o compras
-    //lo cual reautilizaremos esto
-    public static EmployeeDetailDto ToDetailDto(this Employee employee, int QuantityOf)
+    //QuantityOf debido que las vistas que utilizo con cantidad de ventas 
+    private static EmployeeDetailDto ToDetailDto(this Employee employee, int QuantityOf)
         => new EmployeeDetailDto
         (
             Id: employee.Id,
@@ -22,6 +23,9 @@ public static class EmployeeMapper
             quantityof: QuantityOf
 
         );
+
+    public static IEnumerable<EmployeeDetailDto> ToListDetail(this IEnumerable<(Employee employee, int quantityOf)> employees)
+        => employees.Select(e => e.employee.ToDetailDto(e.quantityOf));
 
     // EmployeeCreateDto -> Employee
     public static Employee ToModel(this EmployeeCreateDto dto)

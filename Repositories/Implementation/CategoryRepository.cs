@@ -3,6 +3,12 @@ using SistemaDistribuidora.Repositories.DataBaseConnection;
 using System.Threading.Tasks;
 using SistemaDistribuidora.Models;
 using System.Collections.Generic;
+using SistemaDistribuidora.Exceptions;
+using System;
+using Dapper;
+using System.Data;
+using System.Linq;
+using System.Data.Common;
 
 namespace SistemaDistribuidora.Repositories.Implementation;
 
@@ -16,39 +22,202 @@ public class CategoryRepository : ICategoryRepository
         _DataBase = database;
     }
 
-    //METODOS GENERICOS
-    //FALTA IMPLEMENTAR
-
     public async Task InsertAsync(Category category)
     {
-
+        DbConnection Connection;
+        try
+        {
+            Connection = await _DataBase.GetConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ConnectionException("Error en conexion base de datos", ex);
+        }
+       
+        try
+        {
+            await Connection.ExecuteAsync
+                (
+                   "sp_CreateNewCategory",
+                   new
+                   {
+                       CategoryName = category.Name
+                   },
+                   commandType: CommandType.StoredProcedure
+                );
+        }
+        catch(Exception e)
+        {
+            throw new DataBaseOperationException("sp_CreateNewCategory", "Error al insertar", e);
+        }
     }
 
     public async Task UpdateAsync(Category category)
     {
+        DbConnection Connection;
+        try
+        {
+            Connection = await _DataBase.GetConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ConnectionException("Error en conexion base de datos", ex);
+        }
 
+        try
+        {
+            await Connection.ExecuteAsync
+                (
+                    "sp_UpdateCategory",
+                    new { CategoryId = category.IdCategory, CategoryName = category.Name },
+                    commandType: CommandType.StoredProcedure
+                );
+        }
+        catch(Exception e)
+        {
+            throw new DataBaseOperationException("sp_UpdateCategory", "Error al actualizar", e);
+        }
     }
 
     public async Task DeleteAsync(int CategoryId)
     {
+        DbConnection Connection;
+        try
+        {
+            Connection = await _DataBase.GetConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ConnectionException("Error en conexion base de datos", ex);
+        }
 
+        try
+        {
+            await Connection.ExecuteAsync
+                (
+                    "sp_DeleteCategory",
+                    new { CategoryId = CategoryId},
+                    commandType: CommandType.StoredProcedure
+                );
+        }
+        catch (Exception e)
+        {
+            throw new DataBaseOperationException("sp_DeleteCategory", "Error al eliminar", e);
+        }
     }
 
     public async Task<IEnumerable<Category>> GetAllAsync()
     {
-        return null!;
+        DbConnection Connection;
+        try
+        {
+            Connection = await _DataBase.GetConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ConnectionException("Error en conexion base de datos", ex);
+        }
+
+        try
+        {
+            const string sql = "SELECT * FROM vw_AllCategories";
+            var Rows = await Connection.QueryAsync<CategoryMap>(sql);
+
+            return Rows.Select(r => r.ToCategory());
+
+        }
+        catch (Exception e)
+        {
+            throw new DataBaseOperationException("SELECT * FROM vw_AllCategories", "Error al mostrar", e);
+        }
+
     }
 
     public async Task<Category> GetByIdAsync(int CategoryId)
     {
-        return null!;
+        DbConnection Connection;
+        try
+        {
+            Connection = await _DataBase.GetConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ConnectionException("Error en conexion base de datos", ex);
+        }
+
+        try
+        {
+            var row = await Connection.QuerySingleOrDefaultAsync<CategoryMap>
+                        (
+                           "sp_GetCategoryById",
+                           new { CategoryId = CategoryId },
+                           commandType: CommandType.StoredProcedure
+                        );
+            if (row == null)
+                throw new EntityNotFoundException("Categoria",CategoryId);
+
+            return row.ToCategory();
+
+        }
+        catch (Exception e)
+        {
+            throw new DataBaseOperationException("sp_GetCategoryById", "Error al encontrar categoria", e);
+        }
     }
 
-    public async Task<IEnumerable<Category>> GetAllCategoriesWithQuantityOfProductsAsync() 
+    public async Task<IEnumerable<(Category category, int quantityofproducts)>> GetAllCategoriesWithQuantityOfProductsAsync()
     {
-        return null!;
+        DbConnection Connection;
+        try
+        {
+            Connection = await _DataBase.GetConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ConnectionException("Error en conexion base de datos", ex);
+        }
+
+        try
+        {
+            const string sql = "SELECT * FROM vw_CategoryWithQuantityOfProducts";
+
+            var rows = await Connection.QueryAsync<CategoryDetailWithQuantityOfproducts>(sql);
+
+            return rows.Select(r => r.ToTuple());
+        }
+        catch(Exception e)
+        {
+            throw new DataBaseOperationException("SELECT * FROM vw_CategoryWithQuantityOfProducts", "Error al obtener", e);
+
+        }
     }
+
+    #region MAPPERS PRIVADOS
+    private class CategoryMap
+    {
+        public int CategoryId { get; set; }
+        public string CategoryName { get; set; } = "";
+
+        public Category ToCategory() => new Category
+            (
+                idcategory: CategoryId,
+                name: CategoryName
+            );
+    }
+
+    //Hereda para evitar repetir
+    private class CategoryDetailWithQuantityOfproducts  : CategoryMap
+    {
+        public int QuantityOfProducts { get; set; }
+
+        public (Category Category, int QuantityOfProducts) ToTuple() =>
+            (ToCategory(), QuantityOfProducts);
+    }
+    #endregion
+
 }
 
-    
+
+
+
 

@@ -7,5 +7,5 @@ namespace SistemaDistribuidora.Repositories.Interfaces;
 
 public interface ICustomerRepository : IGenericRepository<Customer> 
 {
-    Task<IEnumerable<CustomerDetailDto>> GetAllWithQuantityOfPurchases();
+    Task<IEnumerable<(Customer customer, int QuantityOfPurchases)>> GetAllWithQuantityOfPurchases();
 }

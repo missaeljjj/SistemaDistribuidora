@@ -2,5 +2,6 @@
 public readonly record struct ProductSummaryDto
 (
     int ProductId,
-    string ProductName
+    string ProductName,
+    int stock
 );

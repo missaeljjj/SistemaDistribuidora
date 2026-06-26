@@ -8,7 +8,7 @@ namespace SistemaDistribuidora.Mappers;
 public static class SupplierMapper
 {
     //Supplier -> SupplierDetailDto
-    public static SupplierDetailDto ToDetailDto(this Supplier supplier,int quantityofpurchases,int quantityofproduct)
+    private static SupplierDetailDto ToDetailDto(this Supplier supplier,int quantityofpurchases,int quantityofproduct)
         => new SupplierDetailDto
         (
             Id: supplier.IdSupplier,
@@ -22,6 +22,10 @@ public static class SupplierMapper
             QuantityOfPurchases: quantityofpurchases,
             QuantityOfProducts: quantityofproduct
         );
+
+
+    public static IEnumerable<SupplierDetailDto> ToDetailList(this IEnumerable<(Supplier supplier, int quantityofpurchases, int quantityofproduct)> supplier)
+        => supplier.Select(s => s.supplier.ToDetailDto(s.quantityofpurchases, s.quantityofproduct));
 
     //SupplierCreateDto -> Supplier
     public static Supplier ToModel(this SupplierCreateDto dto)

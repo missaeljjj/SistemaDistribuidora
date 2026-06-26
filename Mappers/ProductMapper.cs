@@ -38,7 +38,7 @@ public static class ProductMapper
         );
 
     //Product -> ProductDetailDto
-    public static ProductDetailDto ToDetailDto(this Product product, int QuantityOfSales, string SupplierName, string CategoryName)
+     private static ProductDetailDto ToDetail(this Product product, int QuantityOfSales, string SupplierName, string CategoryName)
         => new ProductDetailDto
         (
             ProductId:                   product.IdProduct,
@@ -50,9 +50,12 @@ public static class ProductMapper
 
         );
 
+    public static IEnumerable<ProductDetailDto> ToDetailList(this IEnumerable<(Product product, string SupplierName, string CategoryName, int Quantityofsalesofproduct)> items)
+        => items.Select(i => i.product.ToDetail(i.Quantityofsalesofproduct,i.SupplierName,i.CategoryName));
+
     //Detalle de inventario para metodo del repositorio
     //Product -> InventoryDetailDto
-    public static InventoryDetailDto ToInventoryDetail(this Product product, string SupplierName, string CategoryName)
+    private static InventoryDetailDto ToInventoryDetail(this Product product, string SupplierName, string CategoryName)
         => new InventoryDetailDto
         (
             ProductId:      product.IdProduct,
@@ -62,15 +65,21 @@ public static class ProductMapper
             CategoryName:   CategoryName
          );
 
+    public static IEnumerable<InventoryDetailDto> ToInventoryList(this IEnumerable<(Product product, string SupplierName, string CategoryName)> items)
+        => items.Select(i => i.product.ToInventoryDetail(i.SupplierName, i.CategoryName));
+
+
     //Lista que obtiene los datos de ProductoSummaryDto para mostrar como catalogo
     public static IEnumerable<ProductSummaryDto> ToSummaryListDto(this IEnumerable<Product> product)
         => product.Select(p => p.ToSummary());
 
     //SUMMARY PARA LISTA
-    public static ProductSummaryDto ToSummary(this Product product)
+    private static ProductSummaryDto ToSummary(this Product product)
         => new ProductSummaryDto
         (
             ProductId:   product.IdProduct,
-            ProductName: product.Name
+            ProductName: product.Name,
+            stock:      product.Stock
+
         );
 }

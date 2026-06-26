@@ -23,14 +23,28 @@ public static class CategoryMapper
             name: dto.CategoryName ?? existing.Name
         );
 
-    //CategorySummary utilizado en la lista 
-    public static CategorySummaryDto ToSummaryDto(this Category category)
-        => new CategorySummaryDto
+    public static CategoryListDto ToList(this Category category)
+        => new CategoryListDto
         (
-            Id: category.IdCategory,
-            CategoryName: category.Name
+                CategoryId: category.IdCategory,
+                CategoryName: category.Name
         );
 
-    public static IEnumerable<CategorySummaryDto> ToSummaryDtoList(this IEnumerable<Category> categories)
-        => categories.Select(c => c.ToSummaryDto());
+    public static IEnumerable<CategoryListDto> ToCategoryListDto(this IEnumerable<Category> categories)
+        => categories.Select(c => c.ToList());
+
+    public static IEnumerable<CategoryDetailDto> ToDetailDtoList(
+     this IEnumerable<(Category category, int QuantityOfProducts)> items)
+     => items.Select(i => i.category.ToDetail(i.QuantityOfProducts));
+
+
+    public static CategoryDetailDto ToDetail(this Category category, int quantityOfProducts)
+        => new CategoryDetailDto
+        (
+            CategoryId: category.IdCategory,
+            CategoryName: category.Name,
+            QuantityOfProducts: quantityOfProducts
+        );
+
+    
 }

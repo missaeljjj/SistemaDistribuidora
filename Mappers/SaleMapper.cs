@@ -43,31 +43,6 @@ public static class SaleMapper
              SaleCart: Cart     
 
                 
-        );
-
-            
+        );       
     }
-
-    /*
-    public static IEnumerable<SaleDetailDto> ToSaleDetailDtoList(
-        this Sale sale,
-        IReadOnlyDictionary<int, string> productNames,
-        IReadOnlyDictionary<int, string> categoryNames)
-        => sale.Cart
-            .Cast<SaleDetail>()
-            .Select(detail => new SaleDetailDto(
-                IdSaleDetail: detail.IdSaleDetail,
-                ProductId: detail.ProductId,       // ← era "Product"
-                ProductName: productNames.GetValueOrDefault(detail.ProductId, "Desconocido"),
-                CategoryName: categoryNames.GetValueOrDefault(detail.ProductId, "Sin categoría"),
-                Quantity: detail.Quantity,
-                UnitPrice: detail.UnitPrice,
-                Subtotal: detail.Quantity * detail.UnitPrice
-            ));                                       
-
-    */
-
-
-
-
 }

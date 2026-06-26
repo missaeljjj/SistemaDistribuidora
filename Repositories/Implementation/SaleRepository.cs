@@ -1,70 +1,104 @@
-﻿using SistemaDistribuidora.Models;
+﻿using Dapper;
+using SistemaDistribuidora.Exceptions;
+using SistemaDistribuidora.Models;
 using SistemaDistribuidora.Repositories.DataBaseConnection;
 using SistemaDistribuidora.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.Threading.Tasks;
 
+
+
 namespace SistemaDistribuidora.Repositories.Implementation;
-public  class SaleRepository : ISaleRepository
+
+public class SaleRepository : ISaleRepository
+
 {
+
     private readonly IDataBase _DataBase;
 
     public SaleRepository(IDataBase dataBase)
+
     {
         _DataBase = dataBase;
     }
 
-    public async Task InsertAsync(Sale sale)
-    {
+    #region Implementation
+    public async Task CreateNewSaleAsync(Sale sale)
 
+    {
+        DbConnection Connection;
+        try
+        {
+            Connection = await _DataBase.GetConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ConnectionException("Error en conexion base de datos", ex);
+        }
+
+        try
+        {
+            var CartTable = new DataTable();
+            CartTable.Columns.Add("ProductId", typeof(int));
+            CartTable.Columns.Add("Quantity", typeof(int));
+            CartTable.Columns.Add("SaleUnitPrice", typeof(decimal));
+
+            foreach (var item in sale.Cart)
+            {
+                CartTable.Rows.Add(item.ProductId, item.Quantity, item.UnitPrice);
+            }
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@EmployeeId", sale.EmployeeId);
+            parameters.Add("@CustomerId", sale.CustomerId);
+
+            parameters.Add("@Cart", CartTable.AsTableValuedParameter("SalesCart"));
+
+            await Connection.ExecuteAsync(
+                "sp_CreateSale",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+
+        }
+        catch (Exception ex)
+        {
+            throw new DataBaseOperationException("sp_CreateSale", " Error al crear una venta nueva", ex);
+        }
     }
 
-    // Futura implementacion
-    public async Task UpdateAsync(Sale sale)
+
+#endregion
+
+    #region PRIVATE MAPPERS
+
+    private class SaleMap
     {
+        public int SaleId { get; set; }
+        public int EmployeeId { get; set; }
+        public string EmployeeName { get; set; } = "";
+        public int CustomerId { get; set; }
+        public string CustomerName { get; set; } = "";
+        public decimal Total { get; set; }
+        public DateTime SaleDate { get; set; }
+        public string SaleStatus { get; set; } = "";
 
+        public IEnumerable<SaleDetail> SaleCart = new List<SaleDetail>();
+
+        public Sale ToSale() => new Sale(
+            idSale: SaleId,
+            employeeId: EmployeeId,
+            customerId: CustomerId,
+            totalAmount: Total,
+            date: SaleDate,
+            Status: SaleStatus,
+            SaleCart: SaleCart
+
+        );
     }
-
-    // Futura implementacion
-    public async Task DeleteAsync(int SaleId)
-    {
-
-    }
-
-    public async Task<IEnumerable<Sale>> GetAllAsync()
-    {
-        return null!;
-    }
-
-    public async Task<Sale> GetByIdAsync(int SaeId)
-    {
-        return null!;
-    }
-
-
-    public async Task<IEnumerable<Sale>> GetSalesByDateRangeAsync(DateTime startDate, DateTime endDate)
-    {
-        return null!;
-    }
-
-    // Obtener el historial de ventas completo de un cliente específico
-    public async Task<IEnumerable<Sale>> GetSalesByCustomerAsync(int idCustomer)
-    {
-        return null!;
-    }
-
-    // Obtener las ventas procesadas por un empleado
-    public async Task<IEnumerable<Sale>> GetSalesByEmployeeAsync(int idEmployee)
-    {
-        return null!;
-    }
-
-    // Futura implementacion
-    public async Task<bool> CancelSaleAsync(int idSale)
-    {
-        return false;
-    }
-
+    #endregion
 
 }

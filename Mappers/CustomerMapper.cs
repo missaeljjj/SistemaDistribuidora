@@ -7,52 +7,33 @@ namespace SistemaDistribuidora.Mappers;
 
 public static class CustomerMapper
 {
-
-    //Pasar a CustomerDetail tenemos un campo calculado que proviene de count de la base de datos
-    //por lo cual se pone como parametro para asignar
-    public static CustomerDetailDto ToDetailDto(this Customer customer, int quantityofpurchases = 0 )
-        => new CustomerDetailDto
-        (
-            Id:                 customer.IdCustomer,
-            FullName:           customer.FullName,
-            Address:            customer.Address,
-            Phone :             customer.Phone,
-            IdentityCard:       customer.IdentityCard,
-            TypeOfPerson:       customer.TypeOfPerson,
-            Status:             customer.Status,
-            RegisterDate:       customer.RegisterDate,
-            QuantityOfPurchases: quantityofpurchases
-
-
-        );
-
     //Mapeo para pasar de DTO a model
     public static Customer ToModel(this CustomerCreateDto dto)
         => new Customer
         (
-            idperson:     0,    //ASIGNADO POR LA BASE DE DATOS
-            fullname:     dto.FullName,
+            idperson: 0,    //ASIGNADO POR LA BASE DE DATOS
+            fullname: dto.FullName,
             typeofperson: dto.PersonType,
             identitycard: dto.Identity,
-            address:      dto.Address,
-            phone:        dto.Phone,
+            address: dto.Address,
+            phone: dto.Phone,
             registerdate: System.DateTime.Now,
-            status:       true,
-            idcustomer:   0 //ASIGNADO POR LA BASE DE DATOS
+            status: true,
+            idcustomer: 0 //ASIGNADO POR LA BASE DE DATOS
         );
 
     public static Customer ToModel(this CustomerUpdateDto dto, Customer existing)
         => new Customer
         (
-            idperson:     dto.IdPerson,
-            fullname:     dto.FullName ?? existing.FullName,
+            idperson: dto.IdPerson,
+            fullname: dto.FullName ?? existing.FullName,
             typeofperson: dto.PersonType ?? existing.TypeOfPerson,
             identitycard: dto.Identity ?? existing.IdentityCard,
-            address:      dto.Address ?? existing.Address,
-            phone:        dto.Phone ?? existing.Phone,
+            address: dto.Address ?? existing.Address,
+            phone: dto.Phone ?? existing.Phone,
             registerdate: existing.RegisterDate,
-            status:       dto.Status ?? existing.Status,
-            idcustomer:   dto.CustomerId
+            status: dto.Status ?? existing.Status,
+            idcustomer: dto.CustomerId
         );
 
     //SUMMARY QUE NECESITAMOS PARA EL "CATALOGO" A SELECCIONAR DE CLIENTES
@@ -65,9 +46,41 @@ public static class CustomerMapper
         (
             CustomerId: customer.IdCustomer,
             CustomerName: customer.FullName
-
         );
 
+
+    public static IEnumerable<CustomerListDto> ToList(this IEnumerable<Customer> customers)
+        => customers.Select(c => c.ToListDto());
+
+    private static CustomerListDto ToListDto(this Customer customer)
+        => new CustomerListDto
+        (
+            Id: customer.IdCustomer,
+           FullName: customer.FullName,
+           TypeOfPerson: customer.TypeOfPerson,
+           IdentityCard: customer.IdentityCard,
+           Address: customer.Address,
+           Phone: customer.Phone,
+           RegisterDate: customer.RegisterDate,
+           Status: customer.Status
+        );
+
+    public static IEnumerable<CustomerDetailDto> ToList(this IEnumerable<(Customer customer, int quantityofpurchases)> customers)
+        => customers.Select(c => c.customer.ToDetail(c.quantityofpurchases));
+
+    private static CustomerDetailDto ToDetail(this Customer customer, int quantityofpurchases)
+        => new CustomerDetailDto
+        (
+           Id: customer.IdCustomer,
+           FullName: customer.FullName,
+           TypeOfPerson: customer.TypeOfPerson,
+           IdentityCard: customer.IdentityCard,
+           Address: customer.Address,
+           Phone: customer.Phone,
+           RegisterDate: customer.RegisterDate,
+           Status: customer.Status,
+           QuantityOfPurchases: quantityofpurchases
+        );
 
 
 

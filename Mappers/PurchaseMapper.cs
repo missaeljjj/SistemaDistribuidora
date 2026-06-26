@@ -10,7 +10,6 @@ public static class PurchaseMapper
 {
     // PurchaseCreateDto → Purchase 
 
-    // PurchaseDetailItemDto (carrito) → PurchaseDetail 
     private static PurchaseDetail ToPurchaseDetail(this PurchaseDetailItemDto item, int purchaseId)
         => new PurchaseDetail(
             idPurchaseDetail: 0,
@@ -40,22 +39,5 @@ public static class PurchaseMapper
             PurchaseCart: cart
         );
     }
-
-    // Purchase → PurchaseDetailDto (para mostrar una compra como factura)
-    /*
-    public static IEnumerable<PurchaseDetailDto> ToPurchaseDetailDtoList(
-        this Purchase purchase,
-        IReadOnlyDictionary<int, string> productNames)
-        => purchase.Cart
-            .Cast<PurchaseDetail>()
-            .Select(detail => new PurchaseDetailsDto(
-                PurchaseId: detail.IdPurchaseDetail
-                PurchaseDetailId: detail.IdPurchaseDetail,
-                ProductId: detail.ProductId,
-                ProductName: productNames.GetValueOrDefault(detail.ProductId, "Desconocido"),
-                Quantity: detail.Quantity,
-                UnitPrice: detail.UnitPrice
-            ));
-
-    */
+    
 }

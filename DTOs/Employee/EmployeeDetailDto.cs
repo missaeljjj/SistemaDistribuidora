@@ -11,3 +11,8 @@ public record EmployeeDetailDto(
     DateTime RegisterDate,string Position,int quantityof
 ) : PersonDetailDto(Id, FullName, Address, Phone,IdentityCard,TypeofPerson ,Status,RegisterDate);
 
+public record EmployeeListDto(
+    int Id, string FullName, string Address, string Phone, string IdentityCard, string TypeofPerson, bool Status,
+    DateTime RegisterDate, string Position
+) : PersonDetailDto(Id, FullName, Address, Phone, IdentityCard, TypeofPerson, Status, RegisterDate);
+

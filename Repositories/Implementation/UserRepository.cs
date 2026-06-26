@@ -5,6 +5,7 @@ using SistemaDistribuidora.Repositories.DataBaseConnection;
 using SistemaDistribuidora.Repositories.Interfaces;
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace SistemaDistribuidora.Repositories.Implementation;
@@ -21,8 +22,16 @@ public class UserRepository : IUserRepository
     public async Task<User?> AuthenticateAsync(string username, string password)
     {
         //Conexion a la base de datos
-        await using var connection = await _dataBase.GetConnectionAsync();
-
+        DbConnection connection;
+        try
+        {
+            connection = await _dataBase.GetConnectionAsync();
+        }
+        catch (Exception e)
+        {
+            throw new ConnectionException("Error al conectar a la base de datos", e);
+        }
+       
         try
         {
             //Dapper
@@ -37,7 +46,7 @@ public class UserRepository : IUserRepository
         catch (Exception ex)
         {
             throw new DataBaseOperationException(
-                "usp_Login",
+                "sp_UserLogin",
                 "Error al autenticar el usuario.",
                 ex
             );

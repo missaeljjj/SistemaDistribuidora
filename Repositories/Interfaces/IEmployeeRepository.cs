@@ -7,6 +7,6 @@ namespace SistemaDistribuidora.Repositories.Interfaces;
 public interface IEmployeeRepository : IGenericRepository<Employee>
 {
     // Obtiene todos los empleados junto con las ventas que han realizado
-    Task<IEnumerable<Employee>> GetAllEmployeesWithQuantityofSaleAsync();
+    Task<IEnumerable<(Employee employee, int QuantityOfSales)>> GetAllEmployeesWithQuantityofSaleAsync();
 
 }

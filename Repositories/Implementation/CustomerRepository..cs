@@ -1,78 +1,89 @@
 ﻿using Dapper;
-using SistemaDistribuidora.DTOs;
 using SistemaDistribuidora.Exceptions;
-using SistemaDistribuidora.Mappers;
 using SistemaDistribuidora.Models;
 using SistemaDistribuidora.Repositories.DataBaseConnection;
 using SistemaDistribuidora.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace SistemaDistribuidora.Repositories.Implementation;
 
-public class CustomerRepository  : ICustomerRepository
+public class CustomerRepository : ICustomerRepository
 {
-    private readonly IDataBase _DateBase;
+    private readonly IDataBase _DataBase;
 
-    //por implementar...
     public CustomerRepository(IDataBase database)
     {
-        _DateBase = database;
+        _DataBase = database;
     }
 
     #region REPOSITORY IMPLEMENTATION
     public async Task InsertAsync(Customer customer)
     {
-        await using var connection = await _DateBase.GetConnectionAsync();
-
+        DbConnection Connection;
         try
         {
-            await connection.ExecuteAsync(
-               "sp_InsertCustomer",
-               new
-               {
-                   FullName = customer.FullName,
-                   TypeOfPerson = customer.TypeOfPerson,
-                   IdentityCard = customer.IdentityCard,
-                   Address = customer.Address,
-                   Phone = customer.Phone
-                   
-               },
-               commandType: CommandType.StoredProcedure
-           );
-
+            Connection = await _DataBase.GetConnectionAsync();
         }
         catch (Exception ex)
         {
-            throw new DataBaseOperationException("sp_InsertNewCustomer", "Error  al insertar cliente",ex);
+            throw new ConnectionException("Error en conexion base de datos", ex);
+        }
+        try
+        {
+            await Connection.ExecuteAsync(
+               "sp_CreateNewCustomer",
+               new
+               {
+                   FullName = customer.FullName,
+                   Identification = customer.IdentityCard,
+                   TypePerson = customer.TypeOfPerson,
+                   Address = customer.Address,
+                   Phone = customer.Phone
+               },
+               commandType: CommandType.StoredProcedure
+           );
+        }
+        catch (Exception ex)
+        {
+            throw new DataBaseOperationException("sp_CreateNewCustomer", "Error al insertar cliente", ex);
         }
     }
 
     public async Task UpdateAsync(Customer customer)
     {
-        await using var Connection = await _DateBase.GetConnectionAsync();
+        DbConnection Connection;
+        try
+        {
+            Connection = await _DataBase.GetConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ConnectionException("Error en conexion base de datos", ex);
+        }
 
         try
         {
-            await Connection.ExecuteAsync
-                (
+            await Connection.ExecuteAsync(
                 "sp_UpdateCustomer",
                 new
                 {
+                    CustomerId = customer.IdCustomer,
                     FullName = customer.FullName,
-                    TypeOfPerson = customer.TypeOfPerson,
-                    IdentityCard = customer.IdentityCard,
+                    Identification = customer.IdentityCard,
+                    TypePerson = customer.TypeOfPerson,
                     Address = customer.Address,
-                    Phone = customer.Phone
+                    Phone = customer.Phone,
+                    Status = customer.Status
                 },
                 commandType: CommandType.StoredProcedure
-                );
-                
+            );
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             throw new DataBaseOperationException("sp_UpdateCustomer", "Error al actualizar", ex);
         }
@@ -80,19 +91,23 @@ public class CustomerRepository  : ICustomerRepository
 
     public async Task DeleteAsync(int customerId)
     {
-        await using var Connection = await _DateBase.GetConnectionAsync();
+        DbConnection Connection;
+        try
+        {
+            Connection = await _DataBase.GetConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ConnectionException("Error en conexion base de datos", ex);
+        }
 
         try
         {
-            await Connection.ExecuteAsync
-                (
-                    "sp_DeleteCustomer",
-                    new
-                    {
-                        Id = customerId
-                    },
-                    commandType: CommandType.StoredProcedure
-                );
+            await Connection.ExecuteAsync(
+                "sp_DeleteCustomer",
+                new { CustomerId = customerId },
+                commandType: CommandType.StoredProcedure
+            );
         }
         catch (Exception ex)
         {
@@ -102,79 +117,107 @@ public class CustomerRepository  : ICustomerRepository
 
     public async Task<Customer> GetByIdAsync(int customerId)
     {
-        await using var Connection = await _DateBase.GetConnectionAsync();
+        DbConnection Connection;
+        try
+        {
+            Connection = await _DataBase.GetConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ConnectionException("Error en conexion base de datos", ex);
+        }
 
         try
         {
             var row = await Connection.QuerySingleOrDefaultAsync<CustomerMap>(
-                "sp_GetCustomerById",
-                new { IdCustomer = customerId },
+                "sp_GetCustomerByID",
+                new { CustomerId = customerId },
                 commandType: CommandType.StoredProcedure
-                );
+            );
+
             if (row == null)
                 throw new EntityNotFoundException("Cliente", customerId);
 
             return row.ToCustomer();
         }
-        catch(Exception ex ) 
+        catch (Exception ex)
         {
-            throw new DataBaseOperationException("sp_GetCustomerById", "Error al buscar", ex);
+            throw new DataBaseOperationException("sp_GetCustomerByID", "Error al buscar", ex);
         }
     }
 
     public async Task<IEnumerable<Customer>> GetAllAsync()
     {
-        await using var Connection = await _DateBase.GetConnectionAsync();
+        DbConnection Connection;
+        try
+        {
+            Connection = await _DataBase.GetConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ConnectionException("Error en conexion base de datos", ex);
+        }
 
         try
         {
-            const string Sql = "SELECT * FROM vw_AllCustomers";
-            var rows = await Connection.QueryAsync<CustomerDetailMap>(Sql);
+            const string sql = "SELECT * FROM vw_AllCustomers";
+            var rows = await Connection.QueryAsync<CustomerDetailMap>(sql);
 
             return rows.Select(r => r.ToCustomerDetail());
         }
         catch (Exception ex)
         {
-            throw new DataBaseOperationException("Select * vw_GetAll","Error al obtener", ex);
+            throw new DataBaseOperationException("vw_AllCustomers", "Error al obtener", ex);
         }
-
     }
 
-    public async Task<IEnumerable<CustomerDetailDto>> GetAllWithQuantityOfPurchases()
+    public async Task<IEnumerable<(Customer customer, int QuantityOfPurchases)>> GetAllWithQuantityOfPurchases()
     {
-        await using var Connection = await _DateBase.GetConnectionAsync();
+        DbConnection Connection;
+        try
+        {
+            Connection = await _DataBase.GetConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ConnectionException("Error en conexion base de datos", ex);
+        }
 
-        const string Sql = "SELECT * FROM vw_AllCustumerWithPurchases";
+        try
+        {
+            const string sql = "SELECT * FROM vw_AllCustomerWithPurchases";
+            var rows = await Connection.QueryAsync<CustomerWithCountMap>(sql);
 
-        var rows = await Connection.QueryAsync<CustomerWithCountMap>(Sql);
-
-        return rows.Select(r => r.ToDetailDto());
+            return rows.Select(r => r.ToTupple());
+        }
+        catch (Exception ex)
+        {
+            throw new DataBaseOperationException("vw_AllCustomerWithPurchases", "Error al obtener", ex);
+        }
     }
     #endregion
 
     #region Mapper privados
     private class CustomerMap
     {
-        public int IdPerson { get; set; }
         public int IdCustomer { get; set; }
         public string FullName { get; set; } = "";
         public string TypeOfPerson { get; set; } = "";
-        public string IdentityCard { get; set; } = "";
+        public string Identification { get; set; } = "";
         public string Address { get; set; } = "";
         public string Phone { get; set; } = "";
         public DateTime RegisterDate { get; set; }
-        public bool Status { get; set; }
+        public string Status { get; set; } = "";
 
         public Customer ToCustomer() => new Customer(
-            idperson: IdPerson,
+            idcustomer: IdCustomer,
             fullname: FullName,
             typeofperson: TypeOfPerson,
-            identitycard: IdentityCard,
+            identitycard: Identification,
             address: Address,
             phone: Phone,
             registerdate: RegisterDate,
-            status: Status,
-            idcustomer: IdCustomer
+            status: Status == "Activo"
         );
     }
 
@@ -182,39 +225,30 @@ public class CustomerRepository  : ICustomerRepository
     {
         public int IdCustomer { get; set; }
         public string FullName { get; set; } = "";
-        public string IdentityCard { get; set; } = "";
-        public string TypeofPerson { get; set; } = "";  
-        public string? Address { get; set; } 
-        public string? Phone { get; set; } 
+        public string Identification { get; set; } = "";
+        public string TypeOfPerson { get; set; } = "";
+        public string? Address { get; set; }
+        public string? Phone { get; set; }
         public DateTime RegisterDate { get; set; }
-        public bool Status { get; set; }
+        public string Status { get; set; } = "";
 
-        public Customer ToCustomerDetail() => new Customer
-            (
-                fullname: FullName,
-                typeofperson: TypeofPerson,
-                identitycard: IdentityCard,
-                address: Address!,
-                phone: Phone!,
-                registerdate: RegisterDate,
-                status: Status,
-                idcustomer: IdCustomer
-            );
+        public Customer ToCustomerDetail() => new Customer(
+            idcustomer: IdCustomer,
+            fullname: FullName,
+            typeofperson: TypeOfPerson,
+            identitycard: Identification,
+            address: Address!,
+            phone: Phone!,
+            registerdate: RegisterDate,
+            status: Status == "Activo"
+        );
     }
-    
-
-    // Map extendido: agrega QuantityOfPurchases para sp_GetCustomersWithPurchaseCount
-    // Hereda CustomerMap para no repetir las columnas base
     private class CustomerWithCountMap : CustomerDetailMap
     {
         public int QuantityOfPurchases { get; set; }
 
-        // ToDetailDto usa CustomerMapper — el campo calculado se pasa como parámetro
-        public CustomerDetailDto ToDetailDto() =>
-            ToCustomerDetail().ToDetailDto(quantityofpurchases: QuantityOfPurchases);
+        public (Customer customer, int QuantityOfPurchases) ToTupple() =>
+            (ToCustomerDetail(), QuantityOfPurchases);
     }
+    #endregion
 }
-
-#endregion 
-
-
