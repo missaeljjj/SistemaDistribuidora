@@ -14,7 +14,7 @@ public interface ICustomerService
 
     Task DeleteCustomer(int CustomerId);
 
-    Task<IEnumerable<CustomerListDto>>GetAllCustomers(int CustomerId);
+    Task<IEnumerable<CustomerListDto>>GetAllCustomers();
 
     Task <IEnumerable<CustomerDetailDto>> GetCustomerDetail();
 

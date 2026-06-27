@@ -23,7 +23,7 @@ public static class CategoryMapper
             name: dto.CategoryName ?? existing.Name
         );
 
-    public static CategoryListDto ToList(this Category category)
+    private static CategoryListDto ToList(this Category category)
         => new CategoryListDto
         (
                 CategoryId: category.IdCategory,
@@ -38,7 +38,7 @@ public static class CategoryMapper
      => items.Select(i => i.category.ToDetail(i.QuantityOfProducts));
 
 
-    public static CategoryDetailDto ToDetail(this Category category, int quantityOfProducts)
+    private static CategoryDetailDto ToDetail(this Category category, int quantityOfProducts)
         => new CategoryDetailDto
         (
             CategoryId: category.IdCategory,

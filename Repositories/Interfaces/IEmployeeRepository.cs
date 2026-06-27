@@ -9,4 +9,8 @@ public interface IEmployeeRepository : IGenericRepository<Employee>
     // Obtiene todos los empleados junto con las ventas que han realizado
     Task<IEnumerable<(Employee employee, int QuantityOfSales)>> GetAllEmployeesWithQuantityofSaleAsync();
 
+    Task<bool> EmployeeExisting(string Identification);
+
+    Task<bool> EmployeeExistingForUpdate(string Name,int id);
+
 }

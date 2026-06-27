@@ -4,7 +4,6 @@ using SistemaDistribuidora.Models;
 using SistemaDistribuidora.Repositories.DataBaseConnection;
 using SistemaDistribuidora.Repositories.Interfaces;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -23,6 +22,7 @@ public class ProductRepository : IProductRepository
     }
 
     #region REPOSITORY IMPLEMENTATION
+
     public async Task InsertAsync(Product product)
     {
         await using var connection = await _DataBase.GetConnectionAsync();
@@ -34,8 +34,8 @@ public class ProductRepository : IProductRepository
                 new
                 {
                     ProductName = product.Name,
-                    CategoryId = product.CategoryId,
-                    SupplierId = product.SupplierId,
+                    CategoryId  = product.CategoryId,
+                    SupplierId  = product.SupplierId,
                 },
                 commandType: CommandType.StoredProcedure
             );
@@ -48,35 +48,35 @@ public class ProductRepository : IProductRepository
 
     public async Task UpdateAsync(Product product)
     {
-        await using var Connection = await _DataBase.GetConnectionAsync();
+        await using var connection = await _DataBase.GetConnectionAsync();
 
         try
         {
-            await Connection.ExecuteAsync(
+            await connection.ExecuteAsync(
                 "sp_UpdateProduct",
                 new
                 {
-                    ProductId = product.IdProduct,
+                    ProductId   = product.IdProduct,
                     ProductName = product.Name,
-                    CategoryId = product.CategoryId,
-                    SupplierId = product.SupplierId,
-                    Status = product.Status,
+                    CategoryId  = product.CategoryId,
+                    SupplierId  = product.SupplierId,
+                    Status      = product.Status,
                 },
                 commandType: CommandType.StoredProcedure
             );
         }
         catch (Exception ex)
         {
-            throw new DataBaseOperationException("sp_UpdateProduct", "Ha ocurrido un error al actualizar", ex);
+            throw new DataBaseOperationException("sp_UpdateProduct", "Error al actualizar el producto", ex);
         }
 
         try
         {
-            await Connection.ExecuteAsync(
+            await connection.ExecuteAsync(
                 "sp_UpdateProductPrices",
                 new
                 {
-                    ProductId = product.IdProduct,
+                    ProductId    = product.IdProduct,
                     NewSalePrice = product.SalePrice,
                 },
                 commandType: CommandType.StoredProcedure
@@ -84,21 +84,19 @@ public class ProductRepository : IProductRepository
         }
         catch (Exception ex)
         {
-            throw new DataBaseOperationException("sp_UpdateProductPrices", "Error al ingresar el nuevo valor", ex);
+            throw new DataBaseOperationException("sp_UpdateProductPrices", "Error al actualizar el precio", ex);
         }
     }
 
-    public async Task DeleteAsync(int ProductId)
+    public async Task DeleteAsync(int productId)
     {
-        await using var Connection = await _DataBase.GetConnectionAsync();
+        await using var connection = await _DataBase.GetConnectionAsync();
+
         try
         {
-            await Connection.ExecuteAsync(
+            await connection.ExecuteAsync(
                 "sp_DeleteProduct",
-                new
-                {
-                    Id = ProductId
-                },
+                new { Id = productId },
                 commandType: CommandType.StoredProcedure
             );
         }
@@ -110,10 +108,10 @@ public class ProductRepository : IProductRepository
 
     public async Task<IEnumerable<Product>> GetAllAsync()
     {
-        DbConnection Connection;
+        DbConnection connection;
         try
         {
-            Connection = await _DataBase.GetConnectionAsync();
+            connection = await _DataBase.GetConnectionAsync();
         }
         catch (Exception ex)
         {
@@ -122,10 +120,9 @@ public class ProductRepository : IProductRepository
 
         try
         {
-            const string Sql = "SELECT * FROM vw_AllProducts";
-            var rows = await Connection.QueryAsync<ProductDetailMap>(Sql);
-
-            return rows.Select(r => r.ToProductDetail());
+            const string sql = "SELECT * FROM vw_AllProducts";
+            var rows = await connection.QueryAsync<ProductMap>(sql);
+            return rows.Select(r => r.ToProduct());
         }
         catch (Exception ex)
         {
@@ -133,12 +130,12 @@ public class ProductRepository : IProductRepository
         }
     }
 
-    public async Task<Product> GetByIdAsync(int ProductId)
+    public async Task<Product> GetByIdAsync(int productId)
     {
-        DbConnection Connection;
+        DbConnection connection;
         try
         {
-            Connection = await _DataBase.GetConnectionAsync();
+            connection = await _DataBase.GetConnectionAsync();
         }
         catch (Exception ex)
         {
@@ -147,14 +144,14 @@ public class ProductRepository : IProductRepository
 
         try
         {
-            var row = await Connection.QuerySingleOrDefaultAsync<ProductMap>(
+            var row = await connection.QuerySingleOrDefaultAsync<ProductMap>(
                 "sp_GetProductById",
-                new { IdProduct = ProductId },
+                new { IdProduct = productId },
                 commandType: CommandType.StoredProcedure
             );
 
             if (row == null)
-                throw new EntityNotFoundException("Producto", ProductId);
+                throw new EntityNotFoundException("Producto", productId);
 
             return row.ToProduct();
         }
@@ -164,12 +161,12 @@ public class ProductRepository : IProductRepository
         }
     }
 
-    public async Task<IEnumerable<Product>> GetAllProductsInInventoryAsync()
+    public async Task<IEnumerable<(Product product, string SupplierName, string CategoryName)>> GetAllProductsInInventoryAsync()
     {
-        DbConnection Connection;
+        DbConnection connection;
         try
         {
-            Connection = await _DataBase.GetConnectionAsync();
+            connection = await _DataBase.GetConnectionAsync();
         }
         catch (Exception ex)
         {
@@ -178,23 +175,22 @@ public class ProductRepository : IProductRepository
 
         try
         {
-            const string Sql = "SELECT * FROM vw_AllProductsInInventory";
-            var rows = await Connection.QueryAsync<ProductMap>(Sql);
-
-            return rows.Select(r => r.ToProduct());
+            const string sql = "SELECT * FROM vw_AllProductsInInventory";
+            var rows = await connection.QueryAsync<InventoryMap>(sql);
+            return rows.Select(r => r.ToTuple());
         }
         catch (Exception ex)
         {
-            throw new DataBaseOperationException("vw_AllProductsInInventory", "Error al obtener los productos en inventario", ex);
+            throw new DataBaseOperationException("vw_AllProductsInInventory", "Error al obtener productos en inventario", ex);
         }
     }
 
-    public async Task<IEnumerable<Product>> GetAllProductsWithQuantityOfSales()
+    public async Task<IEnumerable<(Product product, int QuantityOfSales)>> GetAllProductsWithQuantityOfSales()
     {
-        DbConnection Connection;
+        DbConnection connection;
         try
         {
-            Connection = await _DataBase.GetConnectionAsync();
+            connection = await _DataBase.GetConnectionAsync();
         }
         catch (Exception ex)
         {
@@ -203,73 +199,149 @@ public class ProductRepository : IProductRepository
 
         try
         {
-            const string Sql = "SELECT * FROM vw_ProductDetail";
-            var rows = await Connection.QueryAsync<ProductMap>(Sql);
-
-            return rows.Select(r => r.ToProduct());
+            const string sql = "SELECT * FROM vw_ProductDetail";
+            var rows = await connection.QueryAsync<ProductWithSalesMap>(sql);
+            return rows.Select(r => r.ToTuple());
         }
         catch (Exception ex)
         {
             throw new DataBaseOperationException("vw_ProductDetail", "Error al obtener productos con cantidad de ventas", ex);
         }
     }
+
+    public async Task<bool> ExistingProductWithCategory(int categoryId)
+    {
+        DbConnection connection;
+        try
+        {
+            connection = await _DataBase.GetConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ConnectionException("Error en conexion base de datos", ex);
+        }
+
+        try
+        {
+            const string sql = @"
+                SELECT CASE 
+                    WHEN EXISTS (SELECT 1 FROM Products WHERE CategoryId = @CategoryId) 
+                    THEN 1 ELSE 0 
+                END";
+
+            var result = await connection.ExecuteScalarAsync<int>(sql, new { CategoryId = categoryId });
+            return result == 1;
+        }
+        catch (Exception ex)
+        {
+            throw new DataBaseOperationException("Products", $"Error al verificar productos de la categoría {categoryId}", ex);
+        }
+    }
+
+    public async Task<bool> ExistsByNameAsync(string name)
+    {
+        DbConnection connection;
+        try
+        {
+            connection = await _DataBase.GetConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ConnectionException("Error en conexion base de datos", ex);
+        }
+
+        try
+        {
+            const string sql = @"
+                SELECT CASE 
+                    WHEN EXISTS (SELECT 1 FROM Product WHERE LOWER(TRIM(Name)) = LOWER(TRIM(@Name))) 
+                    THEN 1 ELSE 0 
+                END";
+
+            var result = await connection.ExecuteScalarAsync<int>(sql, new { Name = name });
+            return result == 1;
+        }
+        catch (Exception ex)
+        {
+            throw new DataBaseOperationException("Product", "Error al verificar nombre de producto", ex);
+        }
+    }
+
+    public async Task<bool> ExistsByNameExcludedAsync(string name, int idToExclude)
+    {
+        DbConnection connection;
+        try
+        {
+            connection = await _DataBase.GetConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ConnectionException("Error en conexion base de datos", ex);
+        }
+
+        try
+        {
+            const string sql = @"
+                SELECT CASE 
+                    WHEN EXISTS (SELECT 1 FROM Product WHERE LOWER(TRIM(Name)) = LOWER(TRIM(@Name)) AND ProductId <> @IdToExclude) 
+                    THEN 1 ELSE 0 
+                END";
+
+            var result = await connection.ExecuteScalarAsync<int>(sql, new { Name = name, IdToExclude = idToExclude });
+            return result == 1;
+        }
+        catch (Exception ex)
+        {
+            throw new DataBaseOperationException("Product", "Error al verificar nombre de producto", ex);
+        }
+    }
+
     #endregion
 
     #region PRIVATE MAPPERS
+
+    // Mapper base — usado por GetAllAsync y GetByIdAsync
     private class ProductMap
     {
-        public int IdProduct { get; set; }
-        public int Stock { get; set; }
+        public int IdProduct      { get; set; }
         public string ProductName { get; set; } = "";
-        public int CategoryId { get; set; }
-        public int SupplierId { get; set; }
-        public bool Status { get; set; }
-        public decimal SalePrice { get; set; }
-
+        public int Stock          { get; set; }
+        public int CategoryId     { get; set; }
+        public int SupplierId     { get; set; }
+        public decimal SalePrice  { get; set; }
         public decimal PurchasePrice { get; set; }
+        public bool Status        { get; set; }
 
         public Product ToProduct() => new Product(
-            idProduct: IdProduct,
-            stock: Stock,
-            name: ProductName,
-            categoryId: CategoryId,
-            SupplierId: SupplierId,
-            status: Status,
-            salePrice: SalePrice,
-            purchasePrice: PurchasePrice
-
+            idProduct:     IdProduct,
+            name:          ProductName,
+            stock:         Stock,
+            categoryId:    CategoryId,
+            SupplierId:    SupplierId,
+            salePrice:     SalePrice,
+            purchasePrice: PurchasePrice,
+            status:        Status
         );
     }
 
-    private class ProductDetailMap
-    {
-        public int IdProduct { get; set; }
-        public int Stock { get; set; }
-        public string ProductName { get; set; } = "";
-        public int CategoryId { get; set; }
-        public int SupplierId { get; set; }
-        public bool Status { get; set; }
-        public decimal SalePrice { get; set; }
-        public decimal PurchasePrice { get; set; }
-
-        public Product ToProductDetail() => new Product(
-            idProduct: IdProduct,
-            stock: Stock,
-            name: ProductName,
-            categoryId: CategoryId,
-            SupplierId: SupplierId,
-            status: Status,
-            salePrice: SalePrice,
-            purchasePrice: PurchasePrice
-        );
-    }
-
-    private class ProductWithCountMap : ProductDetailMap
+    // Hereda ProductMap y agrega cantidad de ventas — usado por GetAllProductsWithQuantityOfSales
+    private class ProductWithSalesMap : ProductMap
     {
         public int QuantityOfSale { get; set; }
 
-        public (Product product, int quantityofsales) ToDetailDto() =>
-            (ToProductDetail(),quantityofsales: QuantityOfSale);
+        public (Product product, int QuantityOfSales) ToTuple() =>
+            (ToProduct(), QuantityOfSale);
     }
+
+    // Hereda ProductMap y agrega nombres de proveedor y categoría — usado por GetAllProductsInInventoryAsync
+    private class InventoryMap : ProductMap
+    {
+        public string SupplierName { get; set; } = "";
+        public string CategoryName { get; set; } = "";
+
+        public (Product product, string SupplierName, string CategoryName) ToTuple() =>
+            (ToProduct(), SupplierName, CategoryName);
+    }
+
     #endregion
 }

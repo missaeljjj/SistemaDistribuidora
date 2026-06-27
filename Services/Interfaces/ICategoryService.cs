@@ -6,13 +6,13 @@ namespace SistemaDistribuidora.Services.Interfaces;
 
 public interface ICategoryService 
 {
-    Task CreateNewCategory(CustomerCreateDto customerCreateDto);
+    Task CreateNewCategory(CategoryCreateDto dto);
 
-    Task UpdateCategory(CustomerUpdateDto customerUpdateDto);
+    Task UpdateCategory(CategoryUpdateDto dto);
 
     Task DeleteCategory(int IdCategory);
 
-    Task<IEnumerable<CustomerSummaryDto>> GetAllCategories();
+    Task<IEnumerable<CategoryListDto>> GetAllCategories();
 
-    Task<IEnumerable<CustomerDetailDto>> GetAllWithQuantityOfProducts();
+    Task<IEnumerable<CategoryDetailDto>> GetAllWithQuantityOfProducts();
 }

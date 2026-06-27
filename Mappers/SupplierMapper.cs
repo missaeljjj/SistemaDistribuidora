@@ -24,6 +24,23 @@ public static class SupplierMapper
         );
 
 
+    public static IEnumerable<SupplierListDto> ToList(this IEnumerable<Supplier> suppliers)
+        => suppliers.Select(s => s.ToListDto());
+
+        private static SupplierListDto ToListDto(this Supplier supplier)
+        => new SupplierListDto
+        (
+            Id: supplier.IdSupplier,
+            FullName: supplier.FullName,
+            Address: supplier.Address,
+            Phone: supplier.Phone,
+            IdentityCard: supplier.IdentityCard,
+            TypeOfPerson: supplier.TypeOfPerson,
+            Status: supplier.Status,
+            RegisterDate: supplier.RegisterDate
+        );
+
+
     public static IEnumerable<SupplierDetailDto> ToDetailList(this IEnumerable<(Supplier supplier, int quantityofpurchases, int quantityofproduct)> supplier)
         => supplier.Select(s => s.supplier.ToDetailDto(s.quantityofpurchases, s.quantityofproduct));
 

@@ -8,9 +8,9 @@ namespace SistemaDistribuidora.Services.Interfaces;
 
 public interface IEmployeeService
 {
-    Task CreateNewEmployee(CustomerCreateDto customercreatedto);
+    Task CreateNewEmployee(EmployeeCreateDto dto);
 
-    Task UpdateEmployee(CustomerUpdateDto customerupdatedto);
+    Task UpdateEmployee(EmployeeUpdateDto dto);
 
     Task DeleteEmployee(int EmployeeId);
 

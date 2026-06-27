@@ -49,13 +49,13 @@ public static class CustomerMapper
         );
 
 
-    public static IEnumerable<CustomerListDto> ToList(this IEnumerable<Customer> customers)
+    public static IEnumerable<CustomerListDto> ToListDtoList(this IEnumerable<Customer> customers)
         => customers.Select(c => c.ToListDto());
 
     private static CustomerListDto ToListDto(this Customer customer)
         => new CustomerListDto
         (
-            Id: customer.IdCustomer,
+           Id: customer.IdCustomer,
            FullName: customer.FullName,
            TypeOfPerson: customer.TypeOfPerson,
            IdentityCard: customer.IdentityCard,
@@ -65,7 +65,7 @@ public static class CustomerMapper
            Status: customer.Status
         );
 
-    public static IEnumerable<CustomerDetailDto> ToList(this IEnumerable<(Customer customer, int quantityofpurchases)> customers)
+    public static IEnumerable<CustomerDetailDto> ToDetailList(this IEnumerable<(Customer customer, int quantityofpurchases)> customers)
         => customers.Select(c => c.customer.ToDetail(c.quantityofpurchases));
 
     private static CustomerDetailDto ToDetail(this Customer customer, int quantityofpurchases)

@@ -42,7 +42,7 @@ public abstract class BaseTransaction
     public decimal TotalAmount
     {
         get => _TotalAmount;
-        set => _TotalAmount = value > 0 ? value : throw new ValidationException("El monto total debe ser mayor a cero", nameof(TotalAmount));
+        set => _TotalAmount = value >= 0 ? value : throw new ValidationException("El monto total debe ser mayor a cero", nameof(TotalAmount));
     }
 
   

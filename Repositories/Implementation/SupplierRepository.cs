@@ -170,7 +170,7 @@ public class SupplierRepository : ISuplierRepository
         }
     }
 
-    public async Task<IEnumerable<Supplier>> GetAllSuppliersSummary()
+    public async Task<IEnumerable<(Supplier supplier,int QuantityOfPurchases,int QuantityOfProdcutsProvide)>> GetAllSuppliersSummary()
     {
         DbConnection Connection;
         try
@@ -187,11 +187,67 @@ public class SupplierRepository : ISuplierRepository
             const string Sql = "SELECT * FROM vw_SupplierPurchaseSummary";
             var rows = await Connection.QueryAsync<SupplierFullDetailMap>(Sql);
 
-            return rows.Select(r => r.ToSupplierDetail());
+            return rows.Select(r => r.ToTupple());
         }
         catch (Exception ex)
         {
             throw new DataBaseOperationException("vw_SupplierPurchaseSummary", "Error al obtener el resumen de compra del proveedor", ex);
+        }
+    }
+
+        public async Task<bool> SupplierExisting(string Name)
+    {
+        DbConnection connection;
+        try
+        {
+            connection = await _DataBase.GetConnectionAsync();
+        }    
+        catch(Exception e)
+        {
+            throw new ConnectionException("Error en conexion base de datos", e);
+        }    
+
+        try
+        {
+            const string Sql = "SELECT CASE WHEN EXISTS (SELECT 1 FROM Supplier S INNER JOIN Person P ON S.PersonId = C.PersonId WHERE p.Identification = @Identification) THEN 1 ELSE 0 END AS EXISTS";
+
+            var result = await connection.ExecuteScalarAsync<int>(Sql, new { Identification = Name }); 
+
+            return result == 1;
+
+
+        }
+        catch(Exception e)
+        {
+            throw new DataBaseOperationException("Command", "Error al obtener", e);
+        }
+    }
+
+        public async Task<bool> SupplierExistingForUpdate(string Name,int id)
+    {
+        DbConnection connection;
+        try
+        {
+            connection = await _DataBase.GetConnectionAsync();
+        }    
+        catch(Exception e)
+        {
+            throw new ConnectionException("Error en conexion base de datos", e);
+        }    
+
+        try
+        {
+            const string Sql = "SELECT CASE WHEN EXISTS (SELECT 1 FROM Supplier S INNER JOIN Person P ON C.PersonId = S.PersonId WHERE p.Identification = @Identification AND S.SupplierId != @Supplierid) THEN 1 ELSE 0 END AS EXISTS";
+
+            var result = await connection.ExecuteScalarAsync<int>(Sql, new { Identification = Name,SuplierId = id }); 
+
+            return result == 1;
+
+
+        }
+        catch(Exception e)
+        {
+            throw new DataBaseOperationException("Command", "Error al obtener", e);
         }
     }
 

@@ -192,6 +192,63 @@ public class CategoryRepository : ICategoryRepository
         }
     }
 
+    public async Task<bool> ExistsByNameAsync(string name)
+    {
+        DbConnection connection;
+        try
+        {
+            connection = await _DataBase.GetConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ConnectionException("Error en conexion base de datos", ex);
+        }
+
+        try
+        {
+
+            const string sql = @"SELECT CASE WHEN EXISTS (SELECT 1 FROM Category WHERE LOWER(TRIM(Name)) = LOWER(TRIM(@Name)) ) THEN 1 ELSE 0 END";
+
+            var result = await connection.ExecuteScalarAsync<int>(sql, new { Name = name });
+            
+            return result == 1;     
+        }
+        catch(Exception e)
+        {
+            throw new DataBaseOperationException("command","Error al obtener datos",e);            
+        }
+
+           
+    }
+
+    public async Task<bool> ExistsByNameExcludedAsync(string name, int idToExclude)
+    {
+        DbConnection connection;
+        try
+        {
+            connection = await _DataBase.GetConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ConnectionException("Error en conexion base de datos", ex);
+        }
+
+        try
+        {
+
+            const string sql = @"SELECT CASE WHEN EXISTS (SELECT 1 FROM Category WHERE LOWER(TRIM(Name)) = LOWER(TRIM(@Name)) AND CategoryId <> @IdToExclude ) THEN 1 ELSE 0 END";
+
+            var result = await connection.ExecuteScalarAsync<int>(sql, new { Name = name, IdToExclude = idToExclude });
+        
+            return result == 1;
+
+        }
+        catch(Exception e)
+        {
+            throw new DataBaseOperationException("command","Error al obtener datos",e);            
+        }
+    }
+    
     #region MAPPERS PRIVADOS
     private class CategoryMap
     {

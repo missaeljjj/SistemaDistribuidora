@@ -10,5 +10,5 @@ public record SupplierDetailDto
 public record SupplierListDto
 (
     int Id, string FullName, string Address, string Phone, string IdentityCard, string TypeOfPerson, bool Status,
-    DateTime RegisterDate, int QuantityOfPurchases
+    DateTime RegisterDate
 ) : PersonDetailDto(Id, FullName, Address, Phone, IdentityCard, TypeOfPerson, Status, RegisterDate);

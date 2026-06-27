@@ -7,4 +7,6 @@ public interface ICategoryRepository : IGenericRepository<Category>
 {
     //Obtiene todas las categorías junto con sus productos asociados
     Task<IEnumerable<(Category category, int quantityofproducts)>> GetAllCategoriesWithQuantityOfProductsAsync();
+    Task<bool> ExistsByNameAsync(string name);
+    Task<bool> ExistsByNameExcludedAsync(string name, int idToExclude);
 }

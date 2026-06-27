@@ -195,6 +195,62 @@ public class CustomerRepository : ICustomerRepository
             throw new DataBaseOperationException("vw_AllCustomerWithPurchases", "Error al obtener", ex);
         }
     }
+
+    public async Task<bool> CustomerExisting(string Name)
+    {
+        DbConnection connection;
+        try
+        {
+            connection = await _DataBase.GetConnectionAsync();
+        }    
+        catch(Exception e)
+        {
+            throw new ConnectionException("Error en conexion base de datos", e);
+        }    
+
+        try
+        {
+            const string Sql = "SELECT CASE WHEN EXISTS (SELECT 1 FROM Customer C INNER JOIN Person P ON C.PersonId = C.PersonId WHERE p.Identification = @Identification) THEN 1 ELSE 0 END AS EXISTS";
+
+            var result = await connection.ExecuteScalarAsync<int>(Sql, new { Identification = Name }); 
+
+            return result == 1;
+
+
+        }
+        catch(Exception e)
+        {
+            throw new DataBaseOperationException("Command", "Error al obtener", e);
+        }
+    }
+
+        public async Task<bool> CustomerExistingForUpdate(string Name,int id)
+    {
+        DbConnection connection;
+        try
+        {
+            connection = await _DataBase.GetConnectionAsync();
+        }    
+        catch(Exception e)
+        {
+            throw new ConnectionException("Error en conexion base de datos", e);
+        }    
+
+        try
+        {
+            const string Sql = "SELECT CASE WHEN EXISTS (SELECT 1 FROM Customer C INNER JOIN Person P ON C.PersonId = C.PersonId WHERE p.Identification = @Identification AND C.CustomerId != @CustomerId) THEN 1 ELSE 0 END AS EXISTS";
+
+            var result = await connection.ExecuteScalarAsync<int>(Sql, new { Identification = Name,CustomerId = id }); 
+
+            return result == 1;
+
+
+        }
+        catch(Exception e)
+        {
+            throw new DataBaseOperationException("Command", "Error al obtener", e);
+        }
+    }
     #endregion
 
     #region Mapper privados

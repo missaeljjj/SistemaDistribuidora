@@ -45,13 +45,13 @@ public class Product
     public decimal SalePrice
     {
         get => _SalePrice;
-        private set => _SalePrice = value > 0 ? value : throw new ValidationException("El precio de venta debe ser mayor a cero", nameof(SalePrice));
+        private set => _SalePrice = value >= 0 ? value : throw new ValidationException("El precio de venta debe ser mayor a cero", nameof(SalePrice));
     }
 
     public decimal PurchasePrice
     {
         get => _PurchasePrice;
-        private set => _PurchasePrice = value > 0 ? value : throw new ValidationException("El precio de compra debe ser mayor a cero", nameof(PurchasePrice));
+        private set => _PurchasePrice = value >= 0 ? value : throw new ValidationException("El precio de compra debe ser mayor a cero", nameof(PurchasePrice));
     }
 
     public bool Status
