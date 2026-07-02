@@ -78,10 +78,6 @@
 								 Margin="0,5,0,0"
 								 IsVisible="{Binding IsLoading}"/>
 				</StackPanel>
-					<ProgressBar IsIndeterminate="True"
-                                 Height="4"
-                                 VerticalAlignment="Center"
-                                 IsVisible="{Binding IsLoading}"/>
 				
 			</StackPanel>
 		</Border>

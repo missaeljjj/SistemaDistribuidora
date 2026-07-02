@@ -134,7 +134,7 @@ public partial class SaleViewModel : ObservableObject
         FilteredProducts.Clear();
     }
 
-    // ── Carrito ────────────────────────────────────────────────────────────
+    // Carrito
     [RelayCommand]
     private void AddToCart()
     {

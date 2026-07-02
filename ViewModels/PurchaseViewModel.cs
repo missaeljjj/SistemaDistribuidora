@@ -65,7 +65,6 @@ public partial class PurchaseViewModel : ObservableObject
     [ObservableProperty] private string _successMessage = "";
 
     // Proveedores
-
     [ObservableProperty] private ObservableCollection<SupplierListDto> _suppliers = new();
     [ObservableProperty] private SupplierListDto? _selectedSupplier;
 

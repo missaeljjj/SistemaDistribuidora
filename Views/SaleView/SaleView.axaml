@@ -277,7 +277,7 @@
 							<TextBlock Text="{Binding ErrorMessage}"
 									   Foreground="#EF4444" FontSize="13" TextWrapping="Wrap"
 									   IsVisible="{Binding ErrorMessage,
-										   Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+										   Converter={x:Static StringConverters.IsNoDOtNullOrEmpty}}"/>
 
 							<TextBlock Text="{Binding SuccessMessage}"
 									   Foreground="#10B981" FontWeight="SemiBold" FontSize="13"
