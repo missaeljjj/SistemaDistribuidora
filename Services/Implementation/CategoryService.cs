@@ -13,11 +13,13 @@ public class CategoryService : ICategoryService
 {
     private readonly ICategoryRepository _ICategoryRepository;
     private readonly IProductRepository _IProductRepository;
+    private readonly IAppCache _cache;
 
-    public CategoryService(ICategoryRepository IcategoryRepository, IProductRepository IProductRepository)
+    public CategoryService(ICategoryRepository IcategoryRepository, IProductRepository IProductRepository, IAppCache cache)
     {
         _ICategoryRepository = IcategoryRepository;  
         _IProductRepository =   IProductRepository;   
+        _cache = cache;
     }
 
     public async Task CreateNewCategory(CategoryCreateDto dto)
@@ -33,6 +35,7 @@ public class CategoryService : ICategoryService
         var category = dto.ToModel();
         //hacemos la operacion desde el repositorio
         await _ICategoryRepository.InsertAsync(category);
+        await _cache.ReloadCategoriesAsync();
     }
 
     public async Task UpdateCategory(CategoryUpdateDto dto)
@@ -49,6 +52,7 @@ public class CategoryService : ICategoryService
     
         var update = dto.ToModel(existing);
         await _ICategoryRepository.UpdateAsync(update);
+        await _cache.ReloadCategoriesAsync();
     }
 
     public async Task DeleteCategory(int CategoryId)
@@ -56,7 +60,7 @@ public class CategoryService : ICategoryService
         // Verifica que existe
         await _ICategoryRepository.GetByIdAsync(CategoryId);
 
-        // Regla de negocio: no se puede eliminar si tiene productos asociados
+        // no se puede eliminar si tiene productos asociados
         bool hasProducts = await _IProductRepository.ExistingProductWithCategory(CategoryId);
 
         if (hasProducts)
@@ -64,14 +68,21 @@ public class CategoryService : ICategoryService
                 "CategoriaConProductos",
                 "No se puede eliminar la categoría porque tiene productos asociados."
             );
-
+            
         await _ICategoryRepository.DeleteAsync(CategoryId);
+        await _cache.ReloadCategoriesAsync();
     }
 
     public async Task<IEnumerable<CategoryListDto>> GetAllCategories()
     {
-        var CategoryList = await _ICategoryRepository.GetAllAsync();
-        return CategoryList.ToCategoryListDto();
+
+        if (_cache.Categories == null || !_cache.Categories.Any())
+        {
+            await _cache.ReloadCategoriesAsync();
+        }
+
+        return _cache.Categories ?? new List<CategoryListDto>();
+
     }
 
     public async Task<IEnumerable<CategoryDetailDto>> GetAllWithQuantityOfProducts()

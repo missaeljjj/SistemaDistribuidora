@@ -41,7 +41,9 @@ public static class ProductMapper
             Stock:                       product.Stock,
             SupplierName:                SupplierName,
             CategoryName:                CategoryName,
-            QuantityOfSaleOfThisProduct: QuantityOfSales
+            QuantityOfSaleOfThisProduct: QuantityOfSales,
+            SalePrice:                  product.SalePrice,
+            PurchasePrice :             product.PurchasePrice   
         );
 
     public static IEnumerable<InventoryDetailDto> ToInventoryList(

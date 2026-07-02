@@ -14,7 +14,7 @@ public interface IEmployeeService
 
     Task DeleteEmployee(int EmployeeId);
 
-    Task<IEnumerable<EmployeeListDto>> GetAllEmployees(int EmployeeId);
+    Task<IEnumerable<EmployeeListDto>> GetAllEmployees();
 
     Task<IEnumerable<EmployeeDetailDto>> GetEmployeesDetail();
 }

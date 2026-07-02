@@ -253,12 +253,12 @@ public class CategoryRepository : ICategoryRepository
     private class CategoryMap
     {
         public int CategoryId { get; set; }
-        public string CategoryName { get; set; } = "";
+        public string Name { get; set; } = "";
 
         public Category ToCategory() => new Category
             (
                 idcategory: CategoryId,
-                name: CategoryName
+                name: Name
             );
     }
 

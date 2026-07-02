@@ -1,0 +1,190 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SistemaDistribuidora.ViewModels"
+             x:Class="SistemaDistribuidora.Views.MainMenuView"
+             x:DataType="vm:MainMenuViewModel">
+
+    <Design.DataContext>
+		<vm:MainMenuViewModel/>
+    </Design.DataContext>
+
+    <Grid ColumnDefinitions="220,*">
+
+
+        <Border Grid.Column="0"
+                Background="#1E1E2E"
+                Padding="0">
+
+            <DockPanel>
+
+                <!-- Cabecera usuario -->
+                <Border DockPanel.Dock="Top"
+                        Background="#2A2A3E"
+                        Padding="20 24">
+                    <StackPanel Spacing="4">
+                        <Border Width="48" Height="48"
+                                CornerRadius="24"
+                                Background="#7C3AED"
+                                HorizontalAlignment="Left">
+                            <TextBlock Text="👤"
+                                       FontSize="22"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="{Binding WelcomeMessage}"
+                                   Foreground="White"
+                                   FontWeight="SemiBold"
+                                   FontSize="13"
+                                   Margin="0 6 0 0"/>
+                        <Border Background="#7C3AED"
+                                CornerRadius="4"
+                                Padding="6 2"
+                                HorizontalAlignment="Left">
+                            <TextBlock Text="{Binding UserRole}"
+                                       Foreground="White"
+                                       FontSize="11"/>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- Boton cerrar sesion al fondo -->
+                <Button DockPanel.Dock="Bottom"
+                        Command="{Binding LogOutCommand}"
+                        Background="Transparent"
+                        Foreground="#EF4444"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Padding="20 14"
+                        Margin="0"
+                        CornerRadius="0">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock Text="🚪" FontSize="16"/>
+                        <TextBlock Text="Cerrar sesión"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Separador inferior -->
+                <Separator DockPanel.Dock="Bottom" Background="#2A2A3E" Height="1"/>
+
+                <!-- Menu de navegacion -->
+                <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="0 8" Spacing="2">
+
+                        <!-- Ventas -->
+                        <TextBlock Text="OPERACIONES"
+                                   Foreground="#6B7280"
+                                   FontSize="10"
+                                   FontWeight="Bold"
+                                   Margin="20 12 0 4"
+                                   LetterSpacing="1.5"/>
+
+                        <Button Command="{Binding GoToSalesCommand}"
+                                Classes="NavButton">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <TextBlock Text="🛒" FontSize="16"/>
+                                <TextBlock Text="Ventas" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding GoToPurchasesCommand}"
+                                Classes="NavButton">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <TextBlock Text="📦" FontSize="16"/>
+                                <TextBlock Text="Compras" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Catalogos -->
+                        <TextBlock Text="CATÁLOGOS"
+                                   Foreground="#6B7280"
+                                   FontSize="10"
+                                   FontWeight="Bold"
+                                   Margin="20 16 0 4"
+                                   LetterSpacing="1.5"/>
+
+                        <Button Command="{Binding GoToProductsCommand}"
+                                Classes="NavButton">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <TextBlock Text="🏷️" FontSize="16"/>
+                                <TextBlock Text="Productos" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding GoToCategoriesCommand}"
+                                Classes="NavButton">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <TextBlock Text="📂" FontSize="16"/>
+                                <TextBlock Text="Categorías" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding GoToCustomersCommand}"
+                                Classes="NavButton">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <TextBlock Text="👥" FontSize="16"/>
+                                <TextBlock Text="Clientes" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding GoToSuppliersCommand}"
+                                Classes="NavButton">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <TextBlock Text="🏭" FontSize="16"/>
+                                <TextBlock Text="Proveedores" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Admin only -->
+                        <StackPanel IsVisible="{Binding IsAdmin}">
+                            <TextBlock Text="ADMINISTRACIÓN"
+                                       Foreground="#6B7280"
+                                       FontSize="10"
+                                       FontWeight="Bold"
+                                       Margin="20 16 0 4"
+                                       LetterSpacing="1.5"/>
+
+                            <Button Command="{Binding GoToEmployeesCommand}"
+                                    Classes="NavButton">
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <TextBlock Text="🧑‍💼" FontSize="16"/>
+                                    <TextBlock Text="Empleados" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
+                    </StackPanel>
+                </ScrollViewer>
+
+            </DockPanel>
+        </Border>
+
+        <!-- ══════════════════════════════════════════════════════
+             ÁREA DE CONTENIDO (dashboard de bienvenida)
+        ══════════════════════════════════════════════════════ -->
+        <Grid Grid.Column="1"
+              Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}">
+
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="12">
+                <TextBlock Text="📦"
+                           FontSize="64"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="Sistema Distribuidora"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="Selecciona una opción del menú para comenzar"
+                           FontSize="14"
+                           Opacity="0.5"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+
+        </Grid>
+
+    </Grid>
+
+</UserControl>

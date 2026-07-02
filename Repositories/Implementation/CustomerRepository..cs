@@ -72,7 +72,7 @@ public class CustomerRepository : ICustomerRepository
                 "sp_UpdateCustomer",
                 new
                 {
-                    CustomerId = customer.IdCustomer,
+                    CustomerId = customer.IdCustomer, 
                     FullName = customer.FullName,
                     Identification = customer.IdentityCard,
                     TypePerson = customer.TypeOfPerson,
@@ -196,57 +196,54 @@ public class CustomerRepository : ICustomerRepository
         }
     }
 
-    public async Task<bool> CustomerExisting(string Name)
+    public async Task<bool> CustomerExisting(string Identity)
     {
         DbConnection connection;
         try
         {
             connection = await _DataBase.GetConnectionAsync();
-        }    
-        catch(Exception e)
+        }
+        catch (Exception e)
         {
             throw new ConnectionException("Error en conexion base de datos", e);
-        }    
+        }
 
         try
         {
-            const string Sql = "SELECT CASE WHEN EXISTS (SELECT 1 FROM Customer C INNER JOIN Person P ON C.PersonId = C.PersonId WHERE p.Identification = @Identification) THEN 1 ELSE 0 END AS EXISTS";
+            const string Sql = "SELECT CASE WHEN EXISTS (SELECT 1 FROM Customer C INNER JOIN Person P ON C.PersonId = P.PersonId WHERE P.Identification = @Identification) THEN 1 ELSE 0 END AS result";
 
-            var result = await connection.ExecuteScalarAsync<int>(Sql, new { Identification = Name }); 
+            var result = await connection.ExecuteScalarAsync<int>(Sql, new { Identification = Identity });
 
             return result == 1;
-
-
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             throw new DataBaseOperationException("Command", "Error al obtener", e);
         }
     }
 
-        public async Task<bool> CustomerExistingForUpdate(string Name,int id)
+    public async Task<bool> CustomerExistingForUpdate(string Name, int id)
     {
         DbConnection connection;
         try
         {
             connection = await _DataBase.GetConnectionAsync();
-        }    
-        catch(Exception e)
+        }
+        catch (Exception e)
         {
             throw new ConnectionException("Error en conexion base de datos", e);
-        }    
+        }
 
         try
         {
-            const string Sql = "SELECT CASE WHEN EXISTS (SELECT 1 FROM Customer C INNER JOIN Person P ON C.PersonId = C.PersonId WHERE p.Identification = @Identification AND C.CustomerId != @CustomerId) THEN 1 ELSE 0 END AS EXISTS";
+           
+            const string Sql = "SELECT CASE WHEN EXISTS (SELECT 1 FROM Customer C INNER JOIN Person P ON C.PersonId = P.PersonId WHERE P.Identification = @Identification AND C.CustomerId != @CustomerId) THEN 1 ELSE 0 END AS result";
 
-            var result = await connection.ExecuteScalarAsync<int>(Sql, new { Identification = Name,CustomerId = id }); 
+            var result = await connection.ExecuteScalarAsync<int>(Sql, new { Identification = Name, CustomerId = id });
 
             return result == 1;
-
-
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             throw new DataBaseOperationException("Command", "Error al obtener", e);
         }
@@ -256,7 +253,8 @@ public class CustomerRepository : ICustomerRepository
     #region Mapper privados
     private class CustomerMap
     {
-        public int IdCustomer { get; set; }
+       
+        public int CustomerId { get; set; }
         public string FullName { get; set; } = "";
         public string TypeOfPerson { get; set; } = "";
         public string Identification { get; set; } = "";
@@ -266,7 +264,7 @@ public class CustomerRepository : ICustomerRepository
         public string Status { get; set; } = "";
 
         public Customer ToCustomer() => new Customer(
-            idcustomer: IdCustomer,
+            idcustomer: CustomerId,
             fullname: FullName,
             typeofperson: TypeOfPerson,
             identitycard: Identification,
@@ -279,7 +277,7 @@ public class CustomerRepository : ICustomerRepository
 
     private class CustomerDetailMap
     {
-        public int IdCustomer { get; set; }
+        public int CustomerId { get; set; }
         public string FullName { get; set; } = "";
         public string Identification { get; set; } = "";
         public string TypeOfPerson { get; set; } = "";
@@ -289,7 +287,7 @@ public class CustomerRepository : ICustomerRepository
         public string Status { get; set; } = "";
 
         public Customer ToCustomerDetail() => new Customer(
-            idcustomer: IdCustomer,
+            idcustomer: CustomerId,
             fullname: FullName,
             typeofperson: TypeOfPerson,
             identitycard: Identification,

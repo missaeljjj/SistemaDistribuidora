@@ -1,0 +1,206 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SistemaDistribuidora.ViewModels"
+             xmlns:dto="using:SistemaDistribuidora.DTOs"
+             x:Class="SistemaDistribuidora.Views.CategoryView"
+             x:DataType="vm:CategoryViewModel">
+
+	<Design.DataContext>
+		<vm:CategoryViewModel/>
+	</Design.DataContext>
+
+	<Grid ColumnDefinitions="220,*">
+
+		<!-- BARRA LATERAL NAVEGACIÓN -->
+		<Border Grid.Column="0" Background="#1E1E2E" Padding="0">
+			<DockPanel>
+				<!-- Cabecera usuario -->
+				<Border DockPanel.Dock="Top" Background="#2A2A3E" Padding="20 24">
+					<StackPanel Spacing="4">
+						<Border Width="48" Height="48" CornerRadius="24" Background="#7C3AED" HorizontalAlignment="Left">
+							<TextBlock Text="👤" FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+						</Border>
+						<TextBlock Text="{Binding WelcomeMessage}" Foreground="White" FontWeight="SemiBold" FontSize="13" Margin="0 6 0 0"/>
+						<Border Background="#7C3AED" CornerRadius="4" Padding="6 2" HorizontalAlignment="Left">
+							<TextBlock Text="{Binding UserRole}" Foreground="White" FontSize="11"/>
+						</Border>
+					</StackPanel>
+				</Border>
+
+				<!-- Boton regresar al menu -->
+				<Button DockPanel.Dock="Bottom" Command="{Binding GoToMainMenuCommand}" Background="Transparent" Foreground="#EF4444" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="20 14" CornerRadius="0">
+					<StackPanel Orientation="Horizontal" Spacing="10">
+						<TextBlock Text="🚪" FontSize="16"/>
+						<TextBlock Text="Regresar Menu Principal" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
+					</StackPanel>
+				</Button>
+
+				<Separator DockPanel.Dock="Bottom" Background="#2A2A3E" Height="1"/>
+
+				<!-- Menú de operaciones -->
+				<ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto">
+					<StackPanel Margin="0 8" Spacing="2">
+						<TextBlock Text="OPERACIONES" Foreground="#6B7280" FontSize="10" FontWeight="Bold" Margin="20 12 0 4" LetterSpacing="1.5"/>
+
+						<Button Command="{Binding ShowCreateCategoryPanelCommand}" Background="Transparent" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="20 10">
+							<StackPanel Orientation="Horizontal" Spacing="12">
+								<TextBlock Text="📁" FontSize="16"/>
+								<TextBlock Text="Ingresar Categoría" VerticalAlignment="Center"/>
+							</StackPanel>
+						</Button>
+
+						<Button Command="{Binding ShowUpdateCategoryPanelCommand}" Background="Transparent" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="20 10">
+							<StackPanel Orientation="Horizontal" Spacing="12">
+								<TextBlock Text="🔄" FontSize="16"/>
+								<TextBlock Text="Actualizar Categoría" VerticalAlignment="Center"/>
+							</StackPanel>
+						</Button>
+
+						<Button Command="{Binding ShowCategoryListPanelCommand}" Background="Transparent" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="20 10">
+							<StackPanel Orientation="Horizontal" Spacing="12">
+								<TextBlock Text="📋" FontSize="16"/>
+								<TextBlock Text="Mostrar Categorías" VerticalAlignment="Center"/>
+							</StackPanel>
+						</Button>
+
+						<!-- Admin only -->
+						<StackPanel IsVisible="{Binding IsAdmin}">
+							<TextBlock Text="ADMINISTRACIÓN" Foreground="#6B7280" FontSize="10" FontWeight="Bold" Margin="20 16 0 4" LetterSpacing="1.5"/>
+
+							<Button Command="{Binding ShowDeleteCategoryPanelCommand}" Background="Transparent" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="20 10">
+								<StackPanel Orientation="Horizontal" Spacing="12">
+									<TextBlock Text="🗑️" FontSize="16"/>
+									<TextBlock Text="Eliminar Categoría" VerticalAlignment="Center"/>
+								</StackPanel>
+							</Button>
+						</StackPanel>
+					</StackPanel>
+				</ScrollViewer>
+			</DockPanel>
+		</Border>
+
+		<!-- CONTENIDO DINÁMICO PANELES -->
+		<Grid Grid.Column="1" Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}">
+
+			<!-- BIENVENIDA CENTRADA EN PANTALLA -->
+			<Grid IsVisible="{Binding ShowWelcome}" HorizontalAlignment="Center" VerticalAlignment="Center">
+				<StackPanel Spacing="12">
+					<TextBlock Text="📁" FontSize="64" HorizontalAlignment="Center"/>
+					<TextBlock Text="Gestión de Categorías" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center"/>
+					<TextBlock Text="Selecciona una opción del menú para comenzar" FontSize="14" Opacity="0.5" HorizontalAlignment="Center"/>
+				</StackPanel>
+			</Grid>
+
+			<!-- PANEL CREAR CATEGORÍA -->
+			<Border IsVisible="{Binding ShowCreateCategory}" Padding="40">
+				<ScrollViewer>
+					<StackPanel MaxWidth="560" Spacing="16">
+						<TextBlock Text="Ingresar Categoría" FontSize="22" FontWeight="Bold" Margin="0 0 0 8"/>
+
+						<StackPanel Spacing="4">
+							<TextBlock Text="Nombre de la Categoría" FontSize="13" Opacity="0.7"/>
+							<TextBox Text="{Binding CreateCategoryName}" Watermark="Ej. Bebidas, Lácteos, Abarrotes..."/>
+						</StackPanel>
+
+						<TextBlock Text="{Binding ErrorMessage}" Foreground="#EF4444" FontSize="13" IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+						<TextBlock Text="{Binding SuccessMessage}" Foreground="#10B981" FontWeight="SemiBold" FontSize="13" IsVisible="{Binding SuccessMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+
+						<Button Content="Guardar Categoría" Command="{Binding SaveCategoryCommand}" IsEnabled="{Binding !IsLoading}" Background="#7C3AED" Foreground="White" HorizontalAlignment="Left" Padding="20 10" CornerRadius="6"/>
+					</StackPanel>
+				</ScrollViewer>
+			</Border>
+
+			<!-- PANEL ACTUALIZAR CATEGORÍA -->
+			<Border IsVisible="{Binding ShowUpdateCategory}" Padding="40">
+				<ScrollViewer>
+					<StackPanel MaxWidth="560" Spacing="16">
+						<TextBlock Text="Actualizar Categoría" FontSize="22" FontWeight="Bold" Margin="0 0 0 8"/>
+
+						<StackPanel Spacing="4">
+							<TextBlock Text="Buscar Categoría" FontSize="13" Opacity="0.7"/>
+							<TextBox Text="{Binding UpdateSearch}" Watermark="Escribe el nombre de la categoría..."/>
+						</StackPanel>
+
+						<!-- Buscador predictivo igual que Empleados -->
+						<Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}" BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}" BorderThickness="1" CornerRadius="6" IsVisible="{Binding FilteredCategoriesForUpdate.Count}">
+							<ItemsControl ItemsSource="{Binding FilteredCategoriesForUpdate}">
+								<ItemsControl.ItemTemplate>
+									<DataTemplate x:DataType="dto:CategoryListDto">
+										<Button Background="Transparent" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12 8"
+												Command="{Binding $parent[UserControl].((vm:CategoryViewModel)DataContext).SelectCategoryToUpdateCommand}"
+												CommandParameter="{Binding}">
+											<TextBlock Text="{Binding CategoryName}"/>
+										</Button>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+						</Border>
+
+						<StackPanel Spacing="16" IsVisible="{Binding SelectedCategoryForUpdate, Converter={x:Static ObjectConverters.IsNotNull}}">
+							<StackPanel Spacing="4">
+								<TextBlock Text="Modificar Nombre de Categoría" FontSize="13" Opacity="0.7"/>
+								<TextBox Text="{Binding UpdateCategoryName}"/>
+							</StackPanel>
+
+							<TextBlock Text="{Binding ErrorMessage}" Foreground="#EF4444" IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+							<TextBlock Text="{Binding SuccessMessage}" Foreground="#10B981" FontWeight="SemiBold" IsVisible="{Binding SuccessMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+
+							<Button Content="Actualizar Categoría" Command="{Binding UpdateCategoryCommand}" IsEnabled="{Binding !IsLoading}" Background="#7C3AED" Foreground="White" HorizontalAlignment="Left" Padding="20 10" CornerRadius="6"/>
+						</StackPanel>
+					</StackPanel>
+				</ScrollViewer>
+			</Border>
+
+			<!-- PANEL MOSTRAR LISTA -->
+			<Border IsVisible="{Binding ShowCategoryList}" Padding="40">
+				<StackPanel Spacing="16">
+					<TextBlock Text="Categorías Registradas" FontSize="22" FontWeight="Bold"/>
+					<TextBlock Text="Cargando..." IsVisible="{Binding IsLoading}" Opacity="0.6"/>
+
+					<DataGrid ItemsSource="{Binding CategoryList}" AutoGenerateColumns="False" IsReadOnly="True" GridLinesVisibility="All">
+						<DataGrid.Columns>
+							<DataGridTextColumn Header="Código ID" Binding="{Binding CategoryId}" Width="1*"/>
+							<DataGridTextColumn Header="Nombre de la Categoría" Binding="{Binding CategoryName}" Width="3*"/>
+						</DataGrid.Columns>
+					</DataGrid>
+				</StackPanel>
+			</Border>
+
+			<!-- PANEL ELIMINAR CATEGORÍA -->
+			<Border IsVisible="{Binding ShowDeleteCategory}" Padding="40">
+				<StackPanel MaxWidth="560" Spacing="16">
+					<TextBlock Text="Eliminar Categoría" FontSize="22" FontWeight="Bold" Margin="0 0 0 8"/>
+
+					<StackPanel Spacing="4">
+						<TextBlock Text="Buscar Categoría" FontSize="13" Opacity="0.7"/>
+						<TextBox Text="{Binding DeleteSearch}" Watermark="Escribe el nombre de la categoría..."/>
+					</StackPanel>
+
+					<Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}" BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}" BorderThickness="1" CornerRadius="6" IsVisible="{Binding FilteredCategoriesForDelete.Count}">
+						<ItemsControl ItemsSource="{Binding FilteredCategoriesForDelete}">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate x:DataType="dto:CategoryListDto">
+									<Button Background="Transparent" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12 8"
+											Command="{Binding $parent[UserControl].((vm:CategoryViewModel)DataContext).SelectCategoryToDeleteCommand}"
+											CommandParameter="{Binding}">
+										<TextBlock Text="{Binding CategoryName}"/>
+									</Button>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</Border>
+
+					<Border Background="#1AEF4444" CornerRadius="6" Padding="14" IsVisible="{Binding SelectedCategoryForDelete, Converter={x:Static ObjectConverters.IsNotNull}}">
+						<StackPanel Spacing="10">
+							<TextBlock Text="{Binding SelectedCategoryForDelete.Value.CategoryName, StringFormat='¿Eliminar la categoría {0}?'}" Foreground="#EF4444" FontWeight="SemiBold"/>
+							<Button Content="Confirmar eliminación" Command="{Binding DeleteCategoryCommand}" Background="#EF4444" Foreground="White" HorizontalAlignment="Left" Padding="16 8" CornerRadius="6"/>
+						</StackPanel>
+					</Border>
+					<TextBlock Text="{Binding ErrorMessage}" Foreground="#EF4444" FontWeight="SemiBold" IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+					<TextBlock Text="{Binding SuccessMessage}" Foreground="#10B981" FontWeight="SemiBold" IsVisible="{Binding SuccessMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+				</StackPanel>
+			</Border>
+
+		</Grid>
+	</Grid>
+</UserControl>

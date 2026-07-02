@@ -5,45 +5,43 @@ using SistemaDistribuidora.DTOs;
 using SistemaDistribuidora.Repositories.Interfaces;
 using SistemaDistribuidora.Exceptions;
 using SistemaDistribuidora.Mappers;
-
+using System.Linq;
 
 namespace SistemaDistribuidora.Services.Implementation;
 
 public class EmployeeService : IEmployeeService
 {
     private readonly IEmployeeRepository _EmployeeRepository;
+    private readonly IAppCache _cache;
 
-    public EmployeeService(IEmployeeRepository employeeRepository)
+    public EmployeeService(IEmployeeRepository employeeRepository, IAppCache Cache)
     {
-        _EmployeeRepository = employeeRepository;        
+        _EmployeeRepository = employeeRepository;
+        _cache = Cache;
     }
 
     public async Task CreateNewEmployee(EmployeeCreateDto dto)
     {
-        bool existing = await _EmployeeRepository.EmployeeExisting(dto.Identity);
 
-        if(existing)
-            throw new BussinessRulesException("Idenificacion duplicada",$"ya existe un empleado con identificacion: {dto.Identity}" );
-        
         var customer = dto.ToModel();
 
         await _EmployeeRepository.InsertAsync(customer);
-
+        await _cache.ReloadEmployeesAsync();
     }
 
     public async Task UpdateEmployee(EmployeeUpdateDto dto)
     {
         var existing = await _EmployeeRepository.GetByIdAsync(dto.EmployeeId);
 
-        bool duplicated = await _EmployeeRepository.EmployeeExistingForUpdate(dto.Identity ?? existing.IdentityCard,dto.EmployeeId);
+        bool duplicated = await _EmployeeRepository.EmployeeExistingForUpdate(dto.Identity ?? existing.IdentityCard, dto.EmployeeId);
 
-        if(duplicated)
-            throw new BussinessRulesException("Idenificacion duplicada",$"ya existe un empleado con identificacion: {dto.Identity}" );
+        if (duplicated)
+            throw new BussinessRulesException("Idenificacion duplicada", $"ya existe un empleado con identificacion: {dto.Identity}");
 
         var update = dto.ToModel(existing);
 
         await _EmployeeRepository.UpdateAsync(update);
-
+        await _cache.ReloadEmployeesAsync();
     }
 
     public async Task DeleteEmployee(int EmployeeId)
@@ -51,12 +49,17 @@ public class EmployeeService : IEmployeeService
         await _EmployeeRepository.GetByIdAsync(EmployeeId);
 
         await _EmployeeRepository.DeleteAsync(EmployeeId);
+        await _cache.ReloadEmployeesAsync();
     }
 
-    public async Task<IEnumerable<EmployeeListDto>> GetAllEmployees(int EmployeeId)
+    public async Task<IEnumerable<EmployeeListDto>> GetAllEmployees()
     {
-        //No implementation for this version
-        return null!;
+        if (_cache.Employees == null || !_cache.Employees.Any())
+        {
+            await _cache.ReloadEmployeesAsync();
+        }
+
+        return _cache.Employees ?? new List<EmployeeListDto>();
     }
 
     public async Task<IEnumerable<EmployeeDetailDto>> GetEmployeesDetail()
@@ -64,7 +67,5 @@ public class EmployeeService : IEmployeeService
         var EmployeeDetail = await _EmployeeRepository.GetAllEmployeesWithQuantityofSaleAsync();
 
         return EmployeeDetail.ToListDetail();
-
     }
-
 }

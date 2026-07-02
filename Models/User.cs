@@ -29,9 +29,9 @@ public class User
     public string Role
     {
         get => _Role;
-        private set => _Role = value == "Admin" || value == "Vendedor"
+        private set => _Role = value == "Administrador" || value == "Vendedor"
             ? value
-            : throw new ValidationException("El rol debe ser 'Admin' o 'Vendedor'", nameof(Role));
+            : throw new ValidationException("El rol debe ser 'Administrados' o 'Vendedor'", nameof(Role));
     }
 
     public User(int userId, int employeeId, string username, string role)
@@ -42,7 +42,7 @@ public class User
         Role = role;
     }
 
-    public bool IsAdmin() => Role == "Admin";
+    public bool IsAdmin() => Role == "Administrador";
     public bool IsSeller() => Role == "Vendedor";
 }
 

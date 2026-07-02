@@ -15,5 +15,5 @@ public  interface ISupplierService
 
     Task<IEnumerable<SupplierListDto>> GetAllSuppliers();
 
-    Task<IEnumerable<SupplierDetailDto>> GetEmployeesDetail();
+    Task<IEnumerable<SupplierDetailDto>> GetSuppliersDetail();
 }

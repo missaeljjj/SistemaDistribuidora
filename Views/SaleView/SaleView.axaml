@@ -1,0 +1,307 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SistemaDistribuidora.ViewModels"
+             xmlns:dto="using:SistemaDistribuidora.DTOs"
+             x:Class="SistemaDistribuidora.Views.SaleView"
+             x:DataType="vm:SaleViewModel">
+
+	<Design.DataContext>
+		<vm:SaleViewModel/>
+	</Design.DataContext>
+
+	<Grid ColumnDefinitions="220,*">
+
+		<!-- ══════════════════════════════════════════════════
+		     SIDEBAR
+		══════════════════════════════════════════════════ -->
+		<Border Grid.Column="0" Background="#1E1E2E" Padding="0">
+			<DockPanel>
+
+				<Border DockPanel.Dock="Top" Background="#2A2A3E" Padding="20 24">
+					<StackPanel Spacing="4">
+						<Border Width="48" Height="48" CornerRadius="24"
+								Background="#7C3AED" HorizontalAlignment="Left">
+							<TextBlock Text="👤" FontSize="22"
+									   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+						</Border>
+						<TextBlock Text="{Binding WelcomeMessage}" Foreground="White"
+								   FontWeight="SemiBold" FontSize="13" Margin="0 6 0 0"/>
+						<Border Background="#7C3AED" CornerRadius="4"
+								Padding="6 2" HorizontalAlignment="Left">
+							<TextBlock Text="{Binding UserRole}" Foreground="White" FontSize="11"/>
+						</Border>
+					</StackPanel>
+				</Border>
+
+				<Button DockPanel.Dock="Bottom"
+						Command="{Binding GoToMainMenuCommand}"
+						Background="Transparent" Foreground="#EF4444"
+						HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+						Padding="20 14" CornerRadius="0">
+					<StackPanel Orientation="Horizontal" Spacing="10">
+						<TextBlock Text="🚪" FontSize="16"/>
+						<TextBlock Text="Regresar Menu Principal"
+								   FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
+					</StackPanel>
+				</Button>
+
+				<Separator DockPanel.Dock="Bottom" Background="#2A2A3E" Height="1"/>
+
+				<ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto">
+					<StackPanel Margin="0 8" Spacing="2">
+						<TextBlock Text="OPERACIONES" Foreground="#6B7280" FontSize="10"
+								   FontWeight="Bold" Margin="20 12 0 4" LetterSpacing="1.5"/>
+						<Button Command="{Binding ShowRegisterSalePanelCommand}"
+								Classes="NavButton">
+							<StackPanel Orientation="Horizontal" Spacing="12">
+								<TextBlock Text="💰" FontSize="16"/>
+								<TextBlock Text="Registrar Venta" VerticalAlignment="Center"/>
+							</StackPanel>
+						</Button>
+					</StackPanel>
+				</ScrollViewer>
+
+			</DockPanel>
+		</Border>
+
+		<!-- ══════════════════════════════════════════════════
+		     CONTENIDO DINÁMICO
+		══════════════════════════════════════════════════ -->
+		<Grid Grid.Column="1" Background="#111118">
+
+			<!-- Bienvenida -->
+			<StackPanel IsVisible="{Binding ShowWelcome}"
+						HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
+				<TextBlock Text="💰" FontSize="64" HorizontalAlignment="Center"/>
+				<TextBlock Text="Gestión de Ventas" Foreground="White"
+						   FontSize="28" FontWeight="Bold" HorizontalAlignment="Center"/>
+				<TextBlock Text="Selecciona una opción del menú para comenzar"
+						   FontSize="14" Opacity="0.5" HorizontalAlignment="Center"/>
+			</StackPanel>
+
+			<!-- Panel Registrar Venta -->
+			<Border IsVisible="{Binding ShowRegisterSale}" Padding="32">
+				<Grid ColumnDefinitions="*,340" RowDefinitions="Auto,*">
+
+					<TextBlock Grid.Row="0" Grid.ColumnSpan="2"
+							   Text="Registrar Nueva Venta" Foreground="White"
+							   FontSize="22" FontWeight="Bold" Margin="0 0 0 24"/>
+
+					<!-- COLUMNA IZQUIERDA -->
+					<ScrollViewer Grid.Row="1" Grid.Column="0" Margin="0 0 24 0">
+						<StackPanel Spacing="20">
+
+							<!-- Selector de cliente -->
+							<!-- CustomerListDto tiene: Id, FullName, Address, Phone, IdentityCard, TypeOfPerson -->
+							<Border Background="#1E1E2E" CornerRadius="8" Padding="20">
+								<StackPanel Spacing="12">
+									<TextBlock Text="Cliente" Foreground="White"
+											   FontSize="13" Opacity="0.7"/>
+									<ComboBox ItemsSource="{Binding Customers}"
+											  SelectedItem="{Binding SelectedCustomer}"
+											  HorizontalAlignment="Stretch"
+											  Background="#111118" Foreground="White"
+											  BorderBrush="#2A2A3E">
+										<ComboBox.ItemTemplate>
+											<DataTemplate x:DataType="dto:CustomerListDto">
+												<TextBlock Text="{Binding FullName}"/>
+											</DataTemplate>
+										</ComboBox.ItemTemplate>
+									</ComboBox>
+								</StackPanel>
+							</Border>
+
+							<!-- Buscador de producto -->
+							<!-- InventoryDetailDto tiene: ProductId, ProductName, Stock, SupplierName, CategoryName -->
+							<!-- NO tiene SalePrice — el precio lo ingresa el empleado -->
+							<Border Background="#1E1E2E" CornerRadius="8" Padding="20">
+								<StackPanel Spacing="12">
+									<TextBlock Text="Buscar Producto" Foreground="White"
+											   FontSize="13" Opacity="0.7"/>
+									<TextBox Text="{Binding ProductSearch}"
+											 Watermark="Escribe el nombre del producto..."
+											 Background="#111118" Foreground="White"
+											 BorderBrush="#2A2A3E" Padding="10"/>
+
+									<!-- Dropdown resultados -->
+									<Border BorderThickness="1" CornerRadius="6"
+											Background="#111118" BorderBrush="#2A2A3E"
+											IsVisible="{Binding FilteredProducts.Count}">
+										<ItemsControl ItemsSource="{Binding FilteredProducts}">
+											<ItemsControl.ItemTemplate>
+												<DataTemplate x:DataType="dto:InventoryDetailDto">
+													<Button Background="Transparent"
+															HorizontalAlignment="Stretch"
+															HorizontalContentAlignment="Left"
+															Padding="14 10"
+															Command="{Binding $parent[UserControl].((vm:SaleViewModel)DataContext).SelectProductCommand}"
+															CommandParameter="{Binding}">
+														<Grid ColumnDefinitions="*,Auto">
+															<StackPanel Grid.Column="0">
+																<TextBlock Text="{Binding ProductName}"
+																		   Foreground="White"/>
+																<TextBlock Text="{Binding CategoryName}"
+																		   Foreground="#6B7280" FontSize="11"/>
+															</StackPanel>
+															<TextBlock Grid.Column="1"
+																	   Text="{Binding Stock, StringFormat='Stock: {0}'}"
+																	   Foreground="#6B7280" FontSize="12"
+																	   VerticalAlignment="Center" Margin="12 0 0 0"/>
+														</Grid>
+													</Button>
+												</DataTemplate>
+											</ItemsControl.ItemTemplate>
+										</ItemsControl>
+									</Border>
+								</StackPanel>
+							</Border>
+
+							<!-- Cantidad y precio — visible solo con producto seleccionado -->
+							<Border Background="#1E1E2E" CornerRadius="8" Padding="20"
+									IsVisible="{Binding SelectedProduct,
+										Converter={x:Static ObjectConverters.IsNotNull}}">
+								<StackPanel Spacing="12">
+									<TextBlock Text="{Binding SelectedProduct.ProductName}"
+											   Foreground="White" FontWeight="SemiBold" FontSize="14"/>
+									<TextBlock Text="{Binding SelectedProduct.Stock, StringFormat='Stock disponible: {0}'}"
+											   Foreground="#6B7280" FontSize="12"/>
+
+									<Grid ColumnDefinitions="*,16,*">
+										<StackPanel Grid.Column="0" Spacing="6">
+											<TextBlock Text="Cantidad" Foreground="White"
+													   FontSize="12" Opacity="0.7"/>
+											<NumericUpDown Value="{Binding Quantity}"
+														   Minimum="1" FormatString="0"
+														   Background="#111118" Foreground="White"
+														   BorderBrush="#2A2A3E"/>
+										</StackPanel>
+										<StackPanel Grid.Column="2" Spacing="6">
+											<TextBlock Text="Precio unitario" Foreground="White"
+													   FontSize="12" Opacity="0.7"/>
+											<NumericUpDown Value="{Binding SelectedProduct.SalePrice}"
+														   Minimum="0" Increment="0.5"
+														   FormatString="N2"
+														   Background="#111118" Foreground="White"
+														   BorderBrush="#2A2A3E"/>
+										</StackPanel>
+									</Grid>
+
+									<Button Content="➕ Agregar al Carrito"
+											Command="{Binding AddToCartCommand}"
+											Background="#7C3AED" Foreground="White"
+											HorizontalAlignment="Stretch"
+											HorizontalContentAlignment="Center"
+											Padding="0 10" CornerRadius="6" FontWeight="SemiBold"/>
+								</StackPanel>
+							</Border>
+
+							<!-- Carrito -->
+							<TextBlock Text="Productos en el Carrito" Foreground="White"
+									   FontSize="15" FontWeight="SemiBold" Margin="4 8 0 0"/>
+
+							<!-- Items del carrito — CartItemViewModel tiene: ProductId, ProductName, Quantity, UnitPrice, Subtotal -->
+							<Border Background="#1E1E2E" CornerRadius="8" Padding="8"
+									IsVisible="{Binding CartItems.Count}">
+								<ItemsControl ItemsSource="{Binding CartItems}">
+									<ItemsControl.ItemTemplate>
+										<DataTemplate x:DataType="vm:CartItemViewModel">
+											<Border Background="#111118" CornerRadius="6"
+													Margin="6" Padding="14 10">
+												<Grid ColumnDefinitions="*,60,110,32">
+													<TextBlock Grid.Column="0"
+															   Text="{Binding ProductName}"
+															   Foreground="White" VerticalAlignment="Center"
+															   TextTrimming="CharacterEllipsis"/>
+													<TextBlock Grid.Column="1"
+															   Text="{Binding Quantity, StringFormat='x{0}'}"
+															   Foreground="#6B7280" FontSize="13"
+															   VerticalAlignment="Center"
+															   HorizontalAlignment="Center"/>
+													<TextBlock Grid.Column="2"
+															   Text="{Binding Subtotal, StringFormat='C\${0:N2}'}"
+															   Foreground="White" FontWeight="SemiBold"
+															   VerticalAlignment="Center"
+															   HorizontalAlignment="Right"/>
+													<Button Grid.Column="3" Content="✕"
+															Background="Transparent" Foreground="#EF4444"
+															Padding="6" Margin="8 0 0 0"
+															Command="{Binding $parent[UserControl].((vm:SaleViewModel)DataContext).RemoveFromCartCommand}"
+															CommandParameter="{Binding}"/>
+												</Grid>
+											</Border>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+							</Border>
+
+							<!-- Carrito vacío -->
+							<Border Background="#1E1E2E" CornerRadius="8" Padding="30"
+									IsVisible="{Binding !CartItems.Count}">
+								<StackPanel Spacing="8" HorizontalAlignment="Center">
+									<TextBlock Text="🛒" FontSize="28"
+											   HorizontalAlignment="Center" Opacity="0.3"/>
+									<TextBlock Text="El carrito está vacío"
+											   Foreground="#6B7280" FontSize="13"
+											   HorizontalAlignment="Center"/>
+								</StackPanel>
+							</Border>
+
+						</StackPanel>
+					</ScrollViewer>
+
+					<!-- COLUMNA DERECHA: Resumen -->
+					<Border Grid.Row="1" Grid.Column="1"
+							Background="#1E1E2E" CornerRadius="8"
+							Padding="24" VerticalAlignment="Top">
+						<StackPanel Spacing="16">
+							<TextBlock Text="Resumen de Venta" Foreground="White"
+									   FontSize="16" FontWeight="SemiBold"/>
+							<Separator Background="#2A2A3E"/>
+
+							<Grid ColumnDefinitions="*,Auto">
+								<TextBlock Grid.Column="0" Text="Total:" Foreground="White"
+										   FontSize="15" VerticalAlignment="Center"/>
+								<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
+									<TextBlock Text="C$" FontSize="14" FontWeight="Bold"
+											   Foreground="#10B981" VerticalAlignment="Bottom" Margin="0 0 0 2"/>
+									<TextBlock Text="{Binding TotalAmount, StringFormat=N2}"
+											   FontSize="22" FontWeight="Bold" Foreground="#10B981"/>
+								</StackPanel>
+							</Grid>
+
+							<TextBlock Text="{Binding CartItems.Count, StringFormat='{}{0} ítem(s)'}"
+									   Foreground="#6B7280" FontSize="13"/>
+
+							<Separator Background="#2A2A3E"/>
+
+							<TextBlock Text="{Binding ErrorMessage}"
+									   Foreground="#EF4444" FontSize="13" TextWrapping="Wrap"
+									   IsVisible="{Binding ErrorMessage,
+										   Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+
+							<TextBlock Text="{Binding SuccessMessage}"
+									   Foreground="#10B981" FontWeight="SemiBold" FontSize="13"
+									   TextWrapping="Wrap"
+									   IsVisible="{Binding SuccessMessage,
+										   Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+
+							<ProgressBar IsIndeterminate="True" IsVisible="{Binding IsLoading}"
+										 Height="3" Background="#111118" Foreground="#7C3AED"/>
+
+							<Button Content="✅ Confirmar Venta"
+									Command="{Binding RegisterSaleCommand}"
+									IsEnabled="{Binding !IsLoading}"
+									Background="#10B981" Foreground="White"
+									HorizontalAlignment="Stretch"
+									HorizontalContentAlignment="Center"
+									Padding="0 14" CornerRadius="6"
+									FontSize="14" FontWeight="Bold"/>
+						</StackPanel>
+					</Border>
+
+				</Grid>
+			</Border>
+
+		</Grid>
+	</Grid>
+</UserControl>

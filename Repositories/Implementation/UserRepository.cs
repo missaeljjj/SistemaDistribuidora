@@ -29,15 +29,21 @@ public class UserRepository : IUserRepository
         }
         catch (Exception e)
         {
+            
             throw new ConnectionException("Error al conectar a la base de datos", e);
         }
        
         try
         {
             //Dapper
+            var parameters = new DynamicParameters();
+            parameters.Add("@UserName", username, DbType.String);
+            parameters.Add("@Password", password, DbType.String);
+
+            // Ejecutamos pasándole el contenedor de parámetros
             var row = await connection.QueryFirstOrDefaultAsync<UserMap>(
                 "sp_UserLogin",
-                new { Username = username, Password = password },
+                parameters,
                 commandType: CommandType.StoredProcedure
             );
 
@@ -45,11 +51,12 @@ public class UserRepository : IUserRepository
         }
         catch (Exception ex)
         {
-            throw new DataBaseOperationException(
-                "sp_UserLogin",
-                "Error al autenticar el usuario.",
-                ex
-            );
+            throw ex;
+            //throw new DataBaseOperationException(
+               // "sp_UserLogin",
+               // "Error al autenticar el usuario.",
+               // ex));
+            
         }
     }
 
@@ -57,9 +64,9 @@ public class UserRepository : IUserRepository
     {
         public int UserId { get; set; }
         public int EmployeeId { get; set; }
-        public string Username { get; set; } = "";
+        public string UserName { get; set; } = "";
         public string Role { get; set; } = "";
 
-        public User ToUser() => new User(UserId, EmployeeId, Username, Role);
+        public User ToUser() => new User(UserId, EmployeeId, UserName, Role);
     }
 }

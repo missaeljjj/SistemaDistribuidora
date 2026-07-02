@@ -1,4 +1,4 @@
-﻿namespace SistemaDistribuidora.DTOs;
+﻿    namespace SistemaDistribuidora.DTOs;
 
 /// <summary>
 /// DTO Para actualizar la informacion de un empleado

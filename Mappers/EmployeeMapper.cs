@@ -27,6 +27,24 @@ public static class EmployeeMapper
     public static IEnumerable<EmployeeDetailDto> ToListDetail(this IEnumerable<(Employee employee, int quantityOf)> employees)
         => employees.Select(e => e.employee.ToDetailDto(e.quantityOf));
 
+
+    private static EmployeeListDto ToListDto(this Employee employee)
+    => new EmployeeListDto
+    (
+        Id: employee.IdEmployee,
+        FullName: employee.FullName,
+        Address: employee.Address,
+        Phone: employee.Phone,
+        IdentityCard: employee.IdentityCard,
+        TypeofPerson: employee.TypeOfPerson,
+        Status: employee.Status,
+        RegisterDate: employee.RegisterDate,
+        Position: employee.Position
+    );
+
+    public static IEnumerable<EmployeeListDto> EmployeeTolistDto(this IEnumerable<Employee> employees)
+    => employees.Select(e => e.ToListDto());
+
     // EmployeeCreateDto -> Employee
     public static Employee ToModel(this EmployeeCreateDto dto)
         => new Employee

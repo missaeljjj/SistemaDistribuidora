@@ -6,8 +6,9 @@ using SistemaDistribuidora.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
+using System.Data.Common;
 using System.Threading.Tasks;
+
 namespace SistemaDistribuidora.Repositories.Implementation;
 
 public class PurchaseRepository : IPurchaseRepository

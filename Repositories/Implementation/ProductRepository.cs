@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.Data.SqlClient;
 using SistemaDistribuidora.Exceptions;
 using SistemaDistribuidora.Models;
 using SistemaDistribuidora.Repositories.DataBaseConnection;
@@ -9,6 +10,7 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace SistemaDistribuidora.Repositories.Implementation;
 
@@ -56,7 +58,7 @@ public class ProductRepository : IProductRepository
                 "sp_UpdateProduct",
                 new
                 {
-                    ProductId   = product.IdProduct,
+                    ProductID   = product.IdProduct,
                     ProductName = product.Name,
                     CategoryId  = product.CategoryId,
                     SupplierId  = product.SupplierId,
@@ -70,22 +72,7 @@ public class ProductRepository : IProductRepository
             throw new DataBaseOperationException("sp_UpdateProduct", "Error al actualizar el producto", ex);
         }
 
-        try
-        {
-            await connection.ExecuteAsync(
-                "sp_UpdateProductPrices",
-                new
-                {
-                    ProductId    = product.IdProduct,
-                    NewSalePrice = product.SalePrice,
-                },
-                commandType: CommandType.StoredProcedure
-            );
-        }
-        catch (Exception ex)
-        {
-            throw new DataBaseOperationException("sp_UpdateProductPrices", "Error al actualizar el precio", ex);
-        }
+   
     }
 
     public async Task DeleteAsync(int productId)
@@ -146,7 +133,7 @@ public class ProductRepository : IProductRepository
         {
             var row = await connection.QuerySingleOrDefaultAsync<ProductMap>(
                 "sp_GetProductById",
-                new { IdProduct = productId },
+                new { ProductId = productId },
                 commandType: CommandType.StoredProcedure
             );
 
@@ -225,7 +212,7 @@ public class ProductRepository : IProductRepository
         {
             const string sql = @"
                 SELECT CASE 
-                    WHEN EXISTS (SELECT 1 FROM Products WHERE CategoryId = @CategoryId) 
+                    WHEN EXISTS (SELECT 1 FROM Product WHERE CategoryId = @CategoryId) 
                     THEN 1 ELSE 0 
                 END";
 
@@ -296,6 +283,38 @@ public class ProductRepository : IProductRepository
         }
     }
 
+    public async Task<bool> UpdateProductPricesAsync(int productId, decimal newSalePrice)
+    {
+        DbConnection connection;
+        try
+        {
+            connection = await _DataBase.GetConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ConnectionException("Error en conexion base de datos", ex);
+        }
+
+        try
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@ProductId", productId, DbType.Int32);
+            parameters.Add("@NewSalePrice", newSalePrice, DbType.Decimal, precision: 10, scale: 2);
+
+            int rowsAffected = await connection.ExecuteAsync(
+                "sp_UpdateProductPrices",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+
+            return rowsAffected > 0;
+        }
+        catch (Exception ex)
+        {
+            throw new DataBaseOperationException("Product", "Error al actualizar", ex);
+        }
+    }
+
     #endregion
 
     #region PRIVATE MAPPERS
@@ -303,7 +322,7 @@ public class ProductRepository : IProductRepository
     // Mapper base — usado por GetAllAsync y GetByIdAsync
     private class ProductMap
     {
-        public int IdProduct      { get; set; }
+        public int ID     { get; set; }
         public string ProductName { get; set; } = "";
         public int Stock          { get; set; }
         public int CategoryId     { get; set; }
@@ -313,7 +332,7 @@ public class ProductRepository : IProductRepository
         public bool Status        { get; set; }
 
         public Product ToProduct() => new Product(
-            idProduct:     IdProduct,
+            idProduct:     ID,
             name:          ProductName,
             stock:         Stock,
             categoryId:    CategoryId,

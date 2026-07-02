@@ -75,7 +75,7 @@ public class SupplierRepository : ISuplierRepository
                 "sp_UpdateSupplier",
                 new
                 {
-                    PersonId = supplier.Id,
+                    SupplierId = supplier.Id,
                     FullName = supplier.FullName,
                     Identification = supplier.IdentityCard,
                     TypePerson = supplier.TypeOfPerson,
@@ -108,7 +108,7 @@ public class SupplierRepository : ISuplierRepository
         {
             await Connection.ExecuteAsync(
                 "sp_DeleteSupplier",
-                new { id = SupplierId },
+                new { SupplierId = SupplierId },
                 commandType: CommandType.StoredProcedure
             );
         }
@@ -126,7 +126,7 @@ public class SupplierRepository : ISuplierRepository
         {
             var row = await Connection.QuerySingleOrDefaultAsync<SupplierMap>(
                 "sp_GetSupplierByID",
-                new { id = SupplierId },
+                new { SupplierId = SupplierId },
                 commandType: CommandType.StoredProcedure
             );
 
@@ -209,7 +209,7 @@ public class SupplierRepository : ISuplierRepository
 
         try
         {
-            const string Sql = "SELECT CASE WHEN EXISTS (SELECT 1 FROM Supplier S INNER JOIN Person P ON S.PersonId = C.PersonId WHERE p.Identification = @Identification) THEN 1 ELSE 0 END AS EXISTS";
+            const string Sql = "SELECT CASE WHEN EXISTS (SELECT 1 FROM Supplier S INNER JOIN Person P ON S.PersonId = P.PersonId WHERE p.Identification = @Identification) THEN 1 ELSE 0 END AS result";
 
             var result = await connection.ExecuteScalarAsync<int>(Sql, new { Identification = Name }); 
 
@@ -237,9 +237,9 @@ public class SupplierRepository : ISuplierRepository
 
         try
         {
-            const string Sql = "SELECT CASE WHEN EXISTS (SELECT 1 FROM Supplier S INNER JOIN Person P ON C.PersonId = S.PersonId WHERE p.Identification = @Identification AND S.SupplierId != @Supplierid) THEN 1 ELSE 0 END AS EXISTS";
+            const string Sql = "SELECT CASE WHEN EXISTS (SELECT 1 FROM Supplier S INNER JOIN Person P ON P.PersonId = S.PersonId WHERE p.Identification = @Identification AND S.SupplierId != @SupplierId) THEN 1 ELSE 0 END AS result";
 
-            var result = await connection.ExecuteScalarAsync<int>(Sql, new { Identification = Name,SuplierId = id }); 
+            var result = await connection.ExecuteScalarAsync<int>(Sql, new { Identification = Name, SupplierId = id });
 
             return result == 1;
 

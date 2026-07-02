@@ -17,4 +17,6 @@ public interface IProductRepository : IGenericRepository<Product>
     Task<bool> ExistsByNameExcludedAsync(string name, int idToExclude);
     // Verifica si hay productos asociados a una categoria antes de eliminarla
     Task<bool> ExistingProductWithCategory(int categoryId);
+
+    Task<bool> UpdateProductPricesAsync(int productId, decimal newSalePrice);
 }

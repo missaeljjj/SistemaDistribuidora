@@ -21,6 +21,6 @@ public static class SessionService
     }
 
     // Helpers para no estar accediendo a CurrentSession?.Role en todos lados
-    public static bool IsAdmin => _currentSession?.Role == "Admin";
+    public static bool IsAdmin => _currentSession?.Role == "Administrador";
     public static bool IsSeller => _currentSession?.Role == "Vendedor";
 }

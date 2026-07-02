@@ -33,8 +33,15 @@ public abstract class Person
         protected set
         {
             string NewValue = value?.Trim() ?? "";
-            if (NewValue != "Natural" && NewValue != "Juridica")
-                throw new ValidationException("El tipo de persona debe ser 'Natural' o 'Juridica'",nameof(TypeOfPerson));
+
+
+            if (!string.Equals(NewValue, "Natural", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(NewValue, "Juridica", StringComparison.OrdinalIgnoreCase))
+                
+            {
+                throw new ValidationException("El tipo de persona debe ser 'Natural' o 'Juridica'", nameof(TypeOfPerson));
+            }
+
             _TypeOfPerson = NewValue;
         }
     }

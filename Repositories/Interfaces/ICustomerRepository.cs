@@ -1,4 +1,5 @@
 ﻿using SistemaDistribuidora.Models;
+using SistemaDistribuidora.DTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -8,7 +9,7 @@ public interface ICustomerRepository : IGenericRepository<Customer>
 {
     Task<IEnumerable<(Customer customer, int QuantityOfPurchases)>> GetAllWithQuantityOfPurchases();
 
-    Task<bool> ExistsCustomerIdentificationUpdateAsync(string identity);
+    Task<bool> CustomerExisting(string Identification);
 
-    Task<bool> CustomerExistingForUpdate(string Name, int id);
+    Task<bool> CustomerExistingForUpdate(string Name,int id);
 }

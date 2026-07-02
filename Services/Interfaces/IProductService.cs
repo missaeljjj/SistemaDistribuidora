@@ -16,4 +16,6 @@ public interface IProductService
 
     Task<IEnumerable<ProductDetailDto>> GetProductsDetail();
 
+    Task<bool> UpdateProductPrice(int productId, decimal newSalePrice);
+
 }

@@ -6,7 +6,9 @@ public record InventoryDetailDto
     string ProductName,
     int Stock,
     string SupplierName,
-    string CategoryName
+    string CategoryName,
+    decimal SalePrice,
+    decimal PurchasePrice
 );
 
 // Extiende InventoryDetailDto agregando solo el campo calculado
@@ -17,7 +19,9 @@ public record ProductDetailDto
     int Stock,
     string SupplierName,
     string CategoryName,
-    int QuantityOfSaleOfThisProduct
-) : InventoryDetailDto(ProductId, ProductName, Stock, SupplierName, CategoryName);
+    int QuantityOfSaleOfThisProduct,
+    decimal SalePrice,
+    decimal PurchasePrice
+) : InventoryDetailDto(ProductId, ProductName, Stock, SupplierName, CategoryName, SalePrice, PurchasePrice);
 
 

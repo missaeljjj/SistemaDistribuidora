@@ -24,6 +24,7 @@ public class EmployeeRepository : IEmployeeRepository
     }
 
     #region REPOSITORY IMPLEMENTATION
+
     public async Task InsertAsync(Employee employee)
     {
         DbConnection connection;
@@ -39,18 +40,18 @@ public class EmployeeRepository : IEmployeeRepository
         try
         {
             await connection.ExecuteAsync(
-               "sp_CreateNewEmployee",
-               new
-               {
-                   FullName = employee.FullName,
-                   TypeOfPerson = employee.TypeOfPerson,
-                   Identification = employee.IdentityCard,
-                   Address = employee.Address,
-                   Phone = employee.Phone,
-               },
-               commandType: CommandType.StoredProcedure
-           );
-
+                "sp_CreateNewEmployee",
+                new
+                {
+                    FullName = employee.FullName,
+                    Identification = employee.IdentityCard,
+                    TypePerson = employee.TypeOfPerson,
+                    Address = employee.Address,
+                    Phone = employee.Phone,
+                    Position = employee.Position ?? "Operativo"
+                },
+                commandType: CommandType.StoredProcedure
+            );
         }
         catch (Exception ex)
         {
@@ -60,10 +61,10 @@ public class EmployeeRepository : IEmployeeRepository
 
     public async Task UpdateAsync(Employee employee)
     {
-        DbConnection Connection;
+        DbConnection connection;
         try
         {
-            Connection = await _DataBase.GetConnectionAsync();
+            connection = await _DataBase.GetConnectionAsync();
         }
         catch (Exception ex)
         {
@@ -72,35 +73,34 @@ public class EmployeeRepository : IEmployeeRepository
 
         try
         {
-            await Connection.ExecuteAsync
-                (
+            await connection.ExecuteAsync(
                 "sp_UpdateEmployee",
                 new
                 {
-                    PersonId = employee.Id,
+                    EmployeeId = employee.Id,
                     FullName = employee.FullName,
-                    TypeOfPerson = employee.TypeOfPerson,
                     Identification = employee.IdentityCard,
+                    Position = employee.Position,
                     Address = employee.Address,
+                    TypePerson = employee.TypeOfPerson,
                     Phone = employee.Phone,
-                    PersonStatus = employee.Status
+                    Status = employee.Status
                 },
                 commandType: CommandType.StoredProcedure
-                );
-
+            );
         }
         catch (Exception ex)
         {
-            throw new DataBaseOperationException("sp_UpdateEmployee", "Error al actualizar", ex);
+            throw new DataBaseOperationException("sp_UpdateEmployee", "Error al actualizar el empleado", ex);
         }
     }
 
     public async Task DeleteAsync(int employeeId)
     {
-        DbConnection Connection;
+        DbConnection connection;
         try
         {
-            Connection = await _DataBase.GetConnectionAsync();
+            connection = await _DataBase.GetConnectionAsync();
         }
         catch (Exception ex)
         {
@@ -109,28 +109,24 @@ public class EmployeeRepository : IEmployeeRepository
 
         try
         {
-            await Connection.ExecuteAsync
-                (
-                    "sp_DeleteEmployee",
-                    new
-                    {
-                        Id = employeeId
-                    },
-                    commandType: CommandType.StoredProcedure
-                );
+            await connection.ExecuteAsync(
+                "sp_DeleteEmployee",
+                new { EmployeeId = employeeId },
+                commandType: CommandType.StoredProcedure
+            );
         }
         catch (Exception ex)
         {
-            throw new DataBaseOperationException("sp_DeleteEmployee", "Error al eliminar", ex);
+            throw new DataBaseOperationException("sp_DeleteEmployee", "Error al eliminar el empleado", ex);
         }
     }
 
     public async Task<Employee> GetByIdAsync(int employeeId)
     {
-        DbConnection Connection;
+        DbConnection connection;
         try
         {
-            Connection = await _DataBase.GetConnectionAsync();
+            connection = await _DataBase.GetConnectionAsync();
         }
         catch (Exception ex)
         {
@@ -139,11 +135,12 @@ public class EmployeeRepository : IEmployeeRepository
 
         try
         {
-            var row = await Connection.QuerySingleOrDefaultAsync<EmployeeMap>(
-                "sp_GetEmployeeById",
-                new { IdEmployee = employeeId },
+            var row = await connection.QuerySingleOrDefaultAsync<EmployeeMap>(
+                "sp_GetEmployeeByID",
+                new { EmployeeId = employeeId },
                 commandType: CommandType.StoredProcedure
-                );
+            );
+
             if (row == null)
                 throw new EntityNotFoundException("Empleado", employeeId);
 
@@ -151,16 +148,16 @@ public class EmployeeRepository : IEmployeeRepository
         }
         catch (Exception ex)
         {
-            throw new DataBaseOperationException("sp_GetEmployeeById", "Error al buscar", ex);
+            throw new DataBaseOperationException("sp_GetEmployeeById", "Error al buscar el empleado por ID", ex);
         }
     }
 
     public async Task<IEnumerable<Employee>> GetAllAsync()
     {
-        DbConnection Connection;
+        DbConnection connection;
         try
         {
-            Connection = await _DataBase.GetConnectionAsync();
+            connection = await _DataBase.GetConnectionAsync();
         }
         catch (Exception ex)
         {
@@ -169,24 +166,23 @@ public class EmployeeRepository : IEmployeeRepository
 
         try
         {
-            const string Sql = "SELECT * FROM vw_AllEmployees";
-            var rows = await Connection.QueryAsync<EmployeeDetailMap>(Sql);
+            const string sql = "SELECT * FROM vw_AllEmployees";
+            var rows = await connection.QueryAsync<EmployeeDetailMap>(sql);
 
             return rows.Select(r => r.ToEmployeeDetail());
         }
         catch (Exception ex)
         {
-            throw new DataBaseOperationException("Select * vw_GetAll", "Error al obtener", ex);
+            throw new DataBaseOperationException("SELECT * FROM vw_AllEmployees", "Error al obtener la lista de empleados", ex);
         }
-
     }
 
     public async Task<IEnumerable<(Employee employee, int QuantityOfSales)>> GetAllEmployeesWithQuantityofSaleAsync()
     {
-        DbConnection Connection;
+        DbConnection connection;
         try
         {
-            Connection = await _DataBase.GetConnectionAsync();
+            connection = await _DataBase.GetConnectionAsync();
         }
         catch (Exception ex)
         {
@@ -195,137 +191,127 @@ public class EmployeeRepository : IEmployeeRepository
 
         try
         {
-            const string Sql = "SELECT * FROM vw_AllEmployeeWithSales";
-            var rows = await Connection.QueryAsync<EmployeeWithCountMap>(Sql);
-            return rows.Select(r => r.ToTupple());
+            const string sql = "SELECT * FROM vw_EmployeeSalesSummary";
+            var rows = await connection.QueryAsync<EmployeeWithCountMap>(sql);
+            return rows.Select(r => r.ToTuple());
         }
         catch (Exception ex)
         {
-            throw new DataBaseOperationException("vw_AllEmployeeWithSales", "Error al obtener empleados con cantidad de ventas", ex);
+            throw new DataBaseOperationException("vw_EmployeeSalesSummary", "Error al obtener empleados con cantidad de ventas", ex);
         }
     }
 
-        public async Task<bool> EmployeeExisting(string Name)
+    public async Task<bool> EmployeeExisting(string identification)
     {
         DbConnection connection;
         try
         {
             connection = await _DataBase.GetConnectionAsync();
-        }    
-        catch(Exception e)
+        }
+        catch (Exception ex)
         {
-            throw new ConnectionException("Error en conexion base de datos", e);
-        }    
+            throw new ConnectionException("Error en conexion base de datos", ex);
+        }
 
         try
         {
-            const string Sql = "SELECT CASE WHEN EXISTS (SELECT 1 FROM Employee E INNER JOIN Person P ON C.PersonId = E.PersonId WHERE p.Identification = @Identification) THEN 1 ELSE 0 END AS EXISTS";
-
-            var result = await connection.ExecuteScalarAsync<int>(Sql, new { Identification = Name }); 
+            const string sql = "SELECT CASE WHEN EXISTS (SELECT 1 FROM Employee E INNER JOIN Person P ON P.PersonId = E.PersonId WHERE P.Identification = @Identification) THEN 1 ELSE 0 END AS result";
+            var result = await connection.ExecuteScalarAsync<int>(sql, new { Identification = identification });
 
             return result == 1;
-
-
         }
-        catch(Exception e)
+        catch (Exception ex)
         {
-            throw new DataBaseOperationException("Command", "Error al obtener", e);
+            throw new DataBaseOperationException("EmployeeExisting", "Error al verificar la existencia del empleado", ex);
         }
     }
 
-        public async Task<bool> EmployeeExistingForUpdate(string Name,int id)
+    public async Task<bool> EmployeeExistingForUpdate(string identification, int id)
     {
         DbConnection connection;
         try
         {
             connection = await _DataBase.GetConnectionAsync();
-        }    
-        catch(Exception e)
+        }
+        catch (Exception ex)
         {
-            throw new ConnectionException("Error en conexion base de datos", e);
-        }    
+            throw new ConnectionException("Error en conexion base de datos", ex);
+        }
 
         try
         {
-            const string Sql = "SELECT CASE WHEN EXISTS (SELECT 1 FROM Employee E INNER JOIN Person P ON E.PersonId = C.PersonId WHERE P.Identification = @Identification AND E.EmployeeId != @CustomerId) THEN 1 ELSE 0 END AS EXISTS";
-
-            var result = await connection.ExecuteScalarAsync<int>(Sql, new { Identification = Name,EmployeeId = id }); 
+            const string sql = "SELECT CASE WHEN EXISTS (SELECT 1 FROM Employee E INNER JOIN Person P ON E.PersonId = P.PersonId WHERE P.Identification = @Identification AND E.EmployeeId != @EmployeeId) THEN 1 ELSE 0 END AS [EXISTS]";
+            var result = await connection.ExecuteScalarAsync<int>(sql, new { Identification = identification, EmployeeId = id });
 
             return result == 1;
-
-
         }
-        catch(Exception e)
+        catch (Exception ex)
         {
-            throw new DataBaseOperationException("Command", "Error al obtener", e);
+            throw new DataBaseOperationException("EmployeeExistingForUpdate", "Error al verificar existencia para actualización", ex);
         }
     }
 
     #endregion
 
-    #region Mapper privados
+    #region Mappers Privados
+
     private class EmployeeMap
     {
-        public int IdPerson { get; set; }
-        public int IdEmployee { get; set; }
+        public int EmployeeId { get; set; }
         public string FullName { get; set; } = "";
         public string TypeOfPerson { get; set; } = "";
         public string Identification { get; set; } = "";
         public string Address { get; set; } = "";
         public string Phone { get; set; } = "";
         public DateTime RegisterDate { get; set; }
-        public bool Status { get; set; }
-        public string EmployeePosition { get; set; } = "";
-
+        public string Status { get; set; } = "";
+        public string Position { get; set; } = "";
 
         public Employee ToEmployee() => new Employee(
-            idperson: IdPerson,
+            idemployee: EmployeeId,
             fullname: FullName,
             typeofperson: TypeOfPerson,
             identitycard: Identification,
             address: Address,
             phone: Phone,
             registerdate: RegisterDate,
-            status: Status,
-            idemployee: IdEmployee,
-            employeeposition: EmployeePosition
+            status: Status == "Activo",
+            employeeposition: Position
         );
     }
 
     private class EmployeeDetailMap
     {
-        public int IdEmployee { get; set; }
+        public int Id { get; set; } 
         public string FullName { get; set; } = "";
-        public string Identification { get; set; } = "";
-        public string TypeofPerson { get; set; } = "";
+        public string IdentityCard { get; set; } = ""; 
+        public string TypeOfPerson { get; set; } = "Natural";
         public string? Address { get; set; }
         public string? Phone { get; set; }
         public DateTime RegisterDate { get; set; }
-        public bool Status { get; set; }
-        public string EmployeePosition { get; set; } = "";
+        public string Status { get; set; } = ""; 
+        public string Position { get; set; } = ""; 
 
-        public Employee ToEmployeeDetail() => new Employee
-            (
-                fullname: FullName,
-                typeofperson: TypeofPerson,
-                identitycard: Identification,
-                address: Address!,
-                phone: Phone!,
-                registerdate: RegisterDate,
-                status: Status,
-                idemployee: IdEmployee,
-                employeeposition: EmployeePosition
-            );
+        public Employee ToEmployeeDetail() => new Employee(
+            fullname: FullName,
+            typeofperson: TypeOfPerson,
+            identitycard: IdentityCard,
+            address: Address ?? string.Empty,
+            phone: Phone ?? string.Empty,
+            registerdate: RegisterDate,
+            status: Status == "Activo",
+            idemployee: Id,
+            employeeposition: Position
+        );
     }
-
 
     private class EmployeeWithCountMap : EmployeeDetailMap
     {
+        
         public int QuantityOfSales { get; set; }
 
-        public (Employee Employee, int quantityofsales) ToTupple() =>
-            (ToEmployeeDetail(),quantityofsales : QuantityOfSales); 
+        public (Employee Employee, int QuantityOfSales) ToTuple() =>
+            (ToEmployeeDetail(), QuantityOfSales);
     }
-}
-
     #endregion
+}

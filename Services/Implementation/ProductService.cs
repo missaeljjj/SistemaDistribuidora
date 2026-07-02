@@ -1,10 +1,12 @@
-﻿using SistemaDistribuidora.Repositories.Interfaces;
-using SistemaDistribuidora.Services.Interfaces;
-using SistemaDistribuidora.DTOs;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using SistemaDistribuidora.DTOs;
 using SistemaDistribuidora.Exceptions;
 using SistemaDistribuidora.Mappers;
+using SistemaDistribuidora.Repositories.Implementation;
+using SistemaDistribuidora.Repositories.Interfaces;
+using SistemaDistribuidora.Services.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SistemaDistribuidora.Services.Implementation;
 
@@ -60,5 +62,17 @@ public class ProductService : IProductService
         var ProductDetail = await _ProductRepository.GetAllProductsWithQuantityOfSales();
 
         return ProductDetail.ToDetailList();
+    }
+
+    public async Task<bool> UpdateProductPrice(int productId, decimal newSalePrice)
+    {
+   
+        if (productId <= 0)
+            throw new BussinessRulesException("Id no existente", $"Producto con Id: {productId} no existe"); 
+
+        if (newSalePrice <= 0)
+            throw new BussinessRulesException("Precio no válido", "El precio de venta debe ser mayor a cero.");
+
+        return await _ProductRepository.UpdateProductPricesAsync(productId, newSalePrice);
     }
 }

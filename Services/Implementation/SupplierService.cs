@@ -6,28 +6,28 @@ using SistemaDistribuidora.DTOs;
 using System.Collections.Generic;
 using SistemaDistribuidora.Exceptions;
 using SistemaDistribuidora.Mappers;
+using System.Linq;
 
 namespace SistemaDistribuidora.Services.Implementation;
 
 public class SupplierService : ISupplierService
 {
     private readonly ISuplierRepository _SuplierRepository;
+    private readonly IAppCache _Cache;
 
-    public SupplierService(ISuplierRepository suplierRepository)
+    public SupplierService(ISuplierRepository suplierRepository,IAppCache cache)
     {
         _SuplierRepository = suplierRepository;
+        _Cache = cache;
     }
 
     public async Task CreateNewSupplier(SupplierCreateDto dto)
     {
-        bool duplicated = await _SuplierRepository.SupplierExisting(dto.Identity);
-
-        if(duplicated)
-            throw new BussinessRulesException("Identificacion duplicada", "Identificacion ya existente");
 
         var customer = dto.ToModel();
 
         await _SuplierRepository.InsertAsync(customer);
+        await _Cache.ReloadSuppliersAsync();
     }
 
 
@@ -43,28 +43,31 @@ public class SupplierService : ISupplierService
         var updated = dto.ToModel(existing);
 
         await _SuplierRepository.UpdateAsync(updated);
+        await _Cache.ReloadSuppliersAsync();
     }
 
     public async Task DeleteSupplier(int SupplierId)
     {
-        //vacio por el momento
+        //No implementation for this version
     }
 
     public async Task<IEnumerable<SupplierListDto>> GetAllSuppliers()
     {
-        var SupplierList = await _SuplierRepository.GetAllAsync();
+        if (_Cache.Suppliers == null || !_Cache.Suppliers.Any())
+        {
+            await _Cache.ReloadSuppliersAsync();
+        }
 
-        return SupplierList.ToList();
+        return _Cache.Suppliers ?? new List<SupplierListDto>();
+
     }
 
-    public async Task<IEnumerable<SupplierDetailDto>> GetEmployeesDetail()
+    public async Task<IEnumerable<SupplierDetailDto>> GetSuppliersDetail()
     {
         var SupplierDetail = await _SuplierRepository.GetAllSuppliersSummary();
 
         return SupplierDetail.ToDetailList();
 
     }
-
-
 
 }

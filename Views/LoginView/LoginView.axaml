@@ -1,0 +1,89 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SistemaDistribuidora.ViewModels"
+             x:Class="SistemaDistribuidora.Views.LoginView"
+             x:DataType="vm:LoginViewModel">
+
+	<Grid Background="#F3F4F6">
+		<Border Margin="30"
+                Padding="30"
+                Background="White"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Width="380"
+                CornerRadius="8"
+                BoxShadow="0 4 10 0 #20000000">
+
+			<StackPanel Spacing="15">
+				<TextBlock Text="DISTRIBUIDORA GO"
+                           FontSize="24"
+                           FontWeight="Bold"
+                           Foreground="#1F2937"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,10"/>
+
+				<TextBlock Text="Inicia sesión para continuar"
+                           FontSize="14"
+                           Foreground="#6B7280"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,15"/>
+
+				<StackPanel Spacing="5">
+					<TextBlock Text="Usuario" FontWeight="Medium" Foreground="#374151"/>
+					<TextBox Text="{Binding Username, Mode=TwoWay}"
+                             Watermark="Ingrese su usuario"
+                             IsEnabled="{Binding !IsLoading}"/>
+				</StackPanel>
+
+				<StackPanel Spacing="5">
+					<TextBlock Text="Contraseña" FontWeight="Medium" Foreground="#374151"/>
+					<TextBox Text="{Binding Password, Mode=TwoWay}"
+                             Watermark="Ingrese su contraseña"
+                             PasswordChar="•"
+                             IsEnabled="{Binding !IsLoading}"/>
+				</StackPanel>
+
+				<TextBlock Text="{Binding ErrorMessage}"
+                           Foreground="#EF4444"
+                           FontSize="13"
+                           HorizontalAlignment="Center"
+                           TextWrapping="Wrap"
+                           IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+
+
+				<StackPanel Spacing="10" Margin="0,10,0,0">
+
+					<Button Content="Ingresar"
+							Command="{Binding LoginCommand}"
+							Background="#2563EB"
+							Foreground="White"
+							HorizontalAlignment="Stretch"
+							HorizontalContentAlignment="Center"
+							Padding="12"
+							CornerRadius="6"
+							IsVisible="{Binding !IsLoading}"/>
+
+					<Button Content="Salir"
+							Command="{Binding ExitApplicationCommand}"
+							Background="#EF4444"
+							Foreground="White"
+							HorizontalAlignment="Stretch"
+							HorizontalContentAlignment="Center"
+							Padding="12"
+							CornerRadius="6"
+							IsVisible="{Binding !IsLoading}"/>
+
+					<ProgressBar IsIndeterminate="True"
+								 Height="4"
+								 Margin="0,5,0,0"
+								 IsVisible="{Binding IsLoading}"/>
+				</StackPanel>
+					<ProgressBar IsIndeterminate="True"
+                                 Height="4"
+                                 VerticalAlignment="Center"
+                                 IsVisible="{Binding IsLoading}"/>
+				
+			</StackPanel>
+		</Border>
+	</Grid>
+</UserControl>
